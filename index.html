@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Zosa Agentic · Products</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ZOSA AGENTIC — CIRCULAR PRODUCT TEMPLATE
+   One file. No dependencies.
+   To add a product: copy a <section class="page"> block,
+   give it a new id, set --accent, and edit the 6 .node cards.
+   ============================================================ */
+
+:root{
+  --ink:#0f0f24;
+  --ink-2:#4c4c6b;
+  --muted:#7b7b9c;
+  --line:#e7e7f1;
+  --bg:#f6f6fb;
+  --card:#ffffff;
+  --brand:#6d5ef0;
+  --accent:#6d5ef0;              /* overridden per product */
+  --accent-soft:rgba(109,94,240,.10);
+  /* one type system across the whole site */
+  --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+  --sans:"Manrope","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --radius:14px;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  /* fit-to-screen: one viewport tall, no page scroll */
+  height:100svh; overflow:hidden;
+  display:flex; flex-direction:column;
+  font-family:var(--sans);
+  color:var(--ink);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+/* fallback layout: narrow or very short windows unroll and scroll */
+body.flow{height:auto; min-height:100svh; overflow:auto; display:block}
+
+/* ---------- top bar / product menu ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; padding:16px 36px;
+  background:rgba(244,245,250,.86);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit}
+.brand .mark{
+  width:42px;height:42px;
+  display:grid;place-items:center;color:var(--ink);
+}
+.brand .mark img{width:100%;height:100%;display:block;object-fit:contain}
+/* the mark spins into place on load, then a hover spins it again */
+@keyframes markSpinIn{
+  0%  {transform:rotate(-330deg) scale(.3);  opacity:0}
+  55% {opacity:1}
+  100%{transform:rotate(0deg)    scale(1);   opacity:1}
+}
+@keyframes wordmarkIn{
+  from{opacity:0; transform:translateX(-12px)}
+  to  {opacity:1; transform:none}
+}
+.brand .mark img{animation:markSpinIn 1.25s cubic-bezier(.18,.78,.2,1) both}
+.brand .mark img.spun{animation:none; transition:transform 1s cubic-bezier(.3,.72,.2,1)}
+.brand:hover .mark img.spun{transform:rotate(360deg)}
+.brand .wm{animation:wordmarkIn .75s .4s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){
+  .brand .mark img, .brand .wm{animation:none !important}
+}
+.brand .wm{font-family:var(--display);font-weight:600;letter-spacing:.17em;font-size:16px}
+.brand .wm span{color:var(--muted);font-weight:500}
+
+.menu{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.menu button{
+  font-family:var(--sans); font-size:15px; font-weight:600;
+  color:var(--ink-2); background:transparent;
+  border:1px solid transparent; border-radius:999px;
+  padding:10px 18px; cursor:pointer; transition:.18s ease;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.menu button .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.45}
+.menu button:hover{background:#fff;border-color:var(--line);color:var(--ink)}
+.menu button[aria-current="page"]{
+  background:#fff; border-color:var(--line); color:var(--ink);
+  box-shadow:0 1px 2px rgba(18,18,43,.06);
+}
+.menu button[aria-current="page"] .dot{opacity:1;background:var(--pill,#6d5ef0)}
+/* divider between the product tabs and the About / Contact tabs */
+.menu .sep{width:1px; height:18px; background:var(--line); margin:0 5px}
+
+/* ---------- pages ---------- */
+main{flex:1 1 auto; min-height:0; display:flex; position:relative}
+/* header/footer breathe on tall screens, tighten on short ones so the circle keeps its room */
+.page{display:none; padding:clamp(12px,2.4vh,26px) 24px clamp(8px,1.6vh,18px); flex:1 1 auto; min-height:0}
+/* same glow language as About / Contact, with a wash of the product's own accent */
+.page:not(.doc){
+  background:
+    radial-gradient(900px 560px at 12% -12%, rgba(109,94,240,.15), transparent 62%),
+    radial-gradient(720px 500px at 88% -4%,  rgba(14,165,183,.11), transparent 60%),
+    radial-gradient(820px 540px at 50% 116%, var(--accent-soft), transparent 66%),
+    var(--bg);
+}
+.page.is-active{display:flex; flex-direction:column; animation:fade .45s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.pagehead{flex:0 0 auto; max-width:1180px; margin:0 auto; text-align:center; position:relative; z-index:6}
+.eyebrow{
+  font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 clamp(4px,.8vh,8px);
+}
+.pagehead h1{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(28px,5vh,54px); letter-spacing:-.032em; line-height:1.04}
+.pagehead .domain{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:clamp(4px,.8vh,8px)}
+
+/* ---------- circular stage ---------- */
+/* --stage is measured by JS from the free space; the calc() is the no-JS fallback.
+   --u is "one design pixel" — every size inside the circle is a multiple of it,
+   so the whole diagram scales as one piece. */
+.stage-wrap{flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center}
+/* .orbit is the circle's own box; the six cards hang in the air around it,
+   each one absolutely placed by its own --x / --y offset from the centre.
+   Because every card's home is expressed as a translation away from that
+   centre, the churn animation only has to drive it back to translate(0,0)
+   for the card to be swallowed by the circle. */
+.orbit{
+  position:relative; flex:0 0 auto;
+  width:var(--stage, 700px); height:var(--stage, 700px);
+}
+.stage{
+  position:relative; flex:0 0 auto;
+  width:var(--stage, min(1400px, 100%, calc(100svh - 210px)));
+  height:var(--stage, min(1400px, 100%, calc(100svh - 210px)));
+  container-type:size;
+  /* smaller divisor = everything inside is larger; the px floor keeps
+     text readable when a short window squeezes the circle down */
+  --u:max(calc(1cqmin / 8.1), 0.78px);
+}
+
+/* the light watermark circle */
+.ring{
+  position:absolute; inset:0; border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 42%, #fff 0%, rgba(255,255,255,.35) 42%, transparent 68%),
+    radial-gradient(circle at 50% 50%, var(--accent-soft) 0%, var(--accent-soft) 58%, rgba(255,255,255,0) 74%);
+  border:1px solid rgba(18,18,43,.06);
+  box-shadow:inset 0 0 90px rgba(255,255,255,.9);
+}
+.ring::after{
+  content:""; position:absolute; inset:9%; border-radius:50%;
+  border:1px dashed rgba(18,18,43,.10);
+}
+.watermark{
+  position:absolute; inset:0; display:grid; place-items:center;
+  font-family:var(--display); font-weight:700; letter-spacing:.16em;
+  font-size:calc(74 * var(--u)); color:var(--accent); opacity:.07;
+  pointer-events:none; user-select:none; text-transform:uppercase;
+  clip-path:circle(50% at 50% 50%);       /* keeps the wordmark inside the circle */
+  overflow:hidden; white-space:nowrap;
+}
+.spokes{position:absolute; inset:0; pointer-events:none}
+
+/* centre product visual */
+.hub{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:calc(470 * var(--u)); height:calc(470 * var(--u));
+  display:grid; place-items:center; z-index:3;
+}
+.hub-plate{
+  width:100%; height:100%; border-radius:50%;
+  background:#fff; border:1px solid var(--line);
+  box-shadow:0 26px 60px -28px rgba(18,18,43,.30), 0 2px 0 rgba(255,255,255,.8) inset;
+  display:grid; place-items:center; padding:calc(11 * var(--u));
+}
+.hub-plate svg{width:100%;height:100%;display:block}
+
+/* the six cards, hanging in the air around the circle.
+   JS measures the free space and publishes --cardw plus each card's polar
+   --rad / --ang, so the six sit square to the page on an arc around the circle.
+   Its home is a point on that arc; the churn decays the orbit to zero. */
+.node{
+  position:absolute; left:50%; top:50%; z-index:4;
+  width:var(--cardw, 300px);
+  /* Everything inside the card is sized in em off this one font-size, and JS
+     sets --fs so three cards always sit clear of each other on a short
+     screen instead of crowding or overlapping. */
+  font-size:calc(clamp(12.4px,1.72vh,16.2px) * var(--fs,1));
+  /* Polar placement: swing out to --ang, ride out to --rad, then unwind the
+     same angle so the card sits square to the page. Written this way the
+     warp only has to sweep --ang and shrink --rad for the card to be drawn
+     into the middle of the circle. */
+  transform:translate(-50%,-50%)
+            rotate(var(--ang,0deg)) translateX(var(--rad,0px))
+            rotate(calc(var(--ang,0deg) * -1));
+  background:rgba(255,255,255,.9);
+  border:1px solid var(--line); border-radius:1.2em;
+  padding:1.05em 1.15em 1.1em;
+  box-shadow:0 22px 46px -30px rgba(18,18,43,.5);
+  backdrop-filter:blur(7px);
+  transition:box-shadow .3s ease, border-color .3s ease, background .3s ease;
+}
+.node:hover{
+  background:#fff; border-color:var(--accent);
+  box-shadow:0 32px 60px -28px rgba(18,18,43,.45);
+  z-index:5;
+}
+.node .num{
+  font-family:var(--mono); font-size:.72em; letter-spacing:.14em;
+  color:var(--accent); display:block; margin-bottom:.45em;
+}
+.node h3{
+  margin:0 0 .46em; font-family:var(--display); font-weight:600;
+  font-size:1.3em; letter-spacing:-.024em; line-height:1.2;
+}
+.node p{margin:0; font-size:1em; line-height:1.5; color:var(--ink-2)}
+.node ul{margin:0; padding-left:1.05em}
+.node li{font-size:1em; line-height:1.5; color:var(--ink-2); margin-bottom:.2em}
+.node li::marker{color:var(--accent)}
+.node .chips{display:flex; flex-wrap:wrap; gap:.42em; margin-top:.45em}
+.chip{
+  font-family:var(--mono); font-size:.68em; letter-spacing:.06em;
+  background:var(--accent-soft); color:var(--accent);
+  border-radius:999px; padding:.34em .66em; white-space:nowrap;
+}
+.node .stat{
+  font-family:var(--display); font-size:2.05em; font-weight:600;
+  letter-spacing:-.03em; line-height:1.12;
+}
+
+/* ============================================================
+   ABOUT / CONTACT  —  "doc" pages
+   Light editorial layout on the shared type system, with its own
+   palette variables so the product circles stay independent.
+   JS puts .doc on <body> while one of these is active, which releases
+   the fit-to-screen frame so the page scrolls and the footer is reachable.
+   ============================================================ */
+body.doc{height:auto; min-height:100svh; overflow:auto; display:block; background:var(--bg)}
+body.doc main{display:block}
+body.doc .page{padding:0; min-height:0}
+body.doc .page.is-active{display:block}
+body.doc.flow .page{padding:0}
+
+.page.doc{
+  --dsp:var(--display);
+  --dsans:var(--sans);
+  --dmono:var(--mono);
+  --d-ink:#0f0f24;
+  --d-ink-2:#4c4c6b;
+  --d-ink-3:#7b7b9c;
+  --d-line:rgba(18,18,43,.10);
+  --d-glass:rgba(255,255,255,.74);
+  --d-violet:#6d5ef0;
+  --d-cyan:#0ea5b7;
+
+  font-family:var(--dsans); color:var(--d-ink);
+  background:
+    radial-gradient(1000px 620px at 12% -14%, rgba(109,94,240,.16), transparent 62%),
+    radial-gradient(760px 520px at 88% -6%,  rgba(14,165,183,.11), transparent 60%),
+    var(--bg);
+}
+
+/* ---------- shell ---------- */
+.doc-inner{max-width:1180px; margin:0 auto; padding:clamp(44px,8vh,104px) 28px clamp(36px,6vh,76px)}
+.d-hero{max-width:960px}
+.d-eyebrow{
+  display:inline-flex; align-items:center; gap:9px; margin:0;
+  font-family:var(--dmono); font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:#5b4bd6; background:rgba(109,94,240,.10);
+  border:1px solid rgba(109,94,240,.26); border-radius:999px; padding:7px 15px;
+}
+.d-eyebrow::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--d-violet); box-shadow:0 0 10px rgba(109,94,240,.7)}
+.d-h1{
+  font-family:var(--dsp); font-weight:600; margin:24px 0 0;
+  font-size:clamp(40px,6.6vw,88px); line-height:.97; letter-spacing:-.038em;
+}
+.d-h1 .grad{
+  background:linear-gradient(102deg,#0f0f24 4%,#5b4bd6 54%,#0ea5b7 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.d-sub{
+  font-family:var(--dsp); font-weight:500; margin:20px 0 0;
+  font-size:clamp(17px,2vw,27px); letter-spacing:-.015em; color:var(--d-ink-2);
+}
+.d-lead{margin:22px 0 0; max-width:740px; font-size:clamp(15px,1.3vw,18.5px); line-height:1.68; color:var(--d-ink-2)}
+.d-lead strong{color:var(--d-ink); font-weight:700}
+
+/* ---------- stat tiles ---------- */
+.d-stats{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(196px,1fr)); margin-top:clamp(34px,5vh,58px)}
+.d-stat{
+  background:#fff; border:1px solid var(--d-line); border-radius:20px; padding:22px 22px 20px;
+  box-shadow:0 18px 40px -34px rgba(18,18,43,.45);
+}
+.d-stat b{display:block; font-family:var(--dsp); font-weight:600; font-size:clamp(21px,2.4vw,30px); letter-spacing:-.025em}
+.d-stat span{display:block; margin-top:9px; font-family:var(--dmono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--d-ink-3)}
+
+/* ---------- section heads ---------- */
+.d-sec{display:flex; align-items:baseline; gap:16px; margin:clamp(46px,8vh,92px) 0 clamp(20px,3vh,32px)}
+.d-sec h2{font-family:var(--dsp); font-weight:600; margin:0; font-size:clamp(25px,3.3vw,42px); letter-spacing:-.032em}
+
+/* ---------- capability cards ---------- */
+.d-grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.d-card{
+  position:relative; overflow:hidden; isolation:isolate;
+  background:var(--d-glass); border:1px solid var(--d-line); border-radius:22px;
+  padding:26px 26px 28px; backdrop-filter:blur(6px);
+  box-shadow:0 20px 44px -36px rgba(18,18,43,.5);
+  transition:transform .4s cubic-bezier(.2,.7,.2,1), border-color .4s ease,
+             background .4s ease, box-shadow .4s ease;
+}
+.d-card::before{
+  content:""; position:absolute; z-index:-1; width:230px; height:230px; top:-100px; left:-76px;
+  border-radius:50%; background:var(--c,#6d5ef0); opacity:.16; filter:blur(44px);
+  transition:opacity .4s ease;
+}
+.d-card:hover{
+  transform:translateY(-6px); background:#fff;
+  border-color:rgba(109,94,240,.32);
+  box-shadow:0 30px 60px -34px rgba(18,18,43,.42);
+}
+.d-card:hover::before{opacity:.3}
+.d-card .n{font-family:var(--dmono); font-size:10.5px; letter-spacing:.18em; color:var(--d-ink-3)}
+.d-card h3{font-family:var(--dsp); font-weight:600; margin:13px 0 11px; font-size:clamp(18px,1.7vw,22px); letter-spacing:-.022em; color:var(--c,var(--d-ink))}
+.d-card p{margin:0; font-size:15px; line-height:1.63; color:var(--d-ink-2)}
+.d-card p strong{color:var(--d-ink); font-weight:700}
+
+/* ---------- three-up strip ---------- */
+.d-row{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); margin-top:16px}
+.d-mini{display:flex; gap:14px; background:#fff; border:1px solid var(--d-line); border-radius:18px; padding:20px 22px}
+.d-mini .bead{flex:0 0 auto; width:9px; height:9px; border-radius:50%; margin-top:7px; background:var(--c,#6d5ef0); box-shadow:0 0 0 4px rgba(109,94,240,.12)}
+.d-mini h4{font-family:var(--dsp); font-weight:600; margin:0 0 6px; font-size:16px; letter-spacing:-.015em}
+.d-mini p{margin:0; font-size:14px; line-height:1.55; color:var(--d-ink-3)}
+
+/* ---------- closing call to action ---------- */
+.d-cta{
+  margin-top:clamp(46px,8vh,92px);
+  display:flex; align-items:center; justify-content:space-between; gap:26px; flex-wrap:wrap;
+  border:1px solid rgba(109,94,240,.22); border-radius:26px;
+  padding:clamp(26px,4vw,46px);
+  background:linear-gradient(118deg, rgba(109,94,240,.14), rgba(14,165,183,.08) 68%, #fff);
+}
+.d-cta h2{font-family:var(--dsp); font-weight:600; margin:0; font-size:clamp(22px,2.9vw,36px); letter-spacing:-.032em}
+.d-cta p{margin:11px 0 0; font-size:15px; color:var(--d-ink-2)}
+.d-btn{
+  display:inline-flex; align-items:center; gap:10px; cursor:pointer;
+  font-family:var(--dsans); font-weight:700; font-size:15.5px; letter-spacing:-.005em;
+  color:#fff; background:var(--d-ink); border:1px solid var(--d-ink); border-radius:999px;
+  padding:15px 26px; text-decoration:none;
+  transition:transform .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s ease, background .3s ease;
+}
+.d-btn:hover{transform:translateY(-2px); box-shadow:0 20px 40px -20px rgba(18,18,43,.55)}
+.d-btn.ghost{background:transparent; color:var(--d-ink); border-color:rgba(18,18,43,.2)}
+.d-btn.ghost:hover{background:#fff; box-shadow:0 16px 34px -24px rgba(18,18,43,.4)}
+
+/* ---------- contact ---------- */
+.d-two{display:grid; gap:18px; grid-template-columns:1.12fr .88fr; align-items:start; margin-top:clamp(30px,5vh,52px)}
+@media (max-width:900px){ .d-two{grid-template-columns:1fr} }
+
+.d-form{
+  background:#fff; border:1px solid var(--d-line); border-radius:24px;
+  padding:clamp(22px,3vw,34px); box-shadow:0 24px 50px -40px rgba(18,18,43,.5);
+}
+.d-form .pair{display:grid; gap:15px; grid-template-columns:1fr 1fr}
+@media (max-width:560px){ .d-form .pair{grid-template-columns:1fr} }
+.d-field{display:block; margin-bottom:15px}
+.d-field > span{
+  display:block; margin-bottom:8px;
+  font-family:var(--dmono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--d-ink-3);
+}
+.d-field input, .d-field select, .d-field textarea{
+  width:100%; font-family:var(--dsans); font-size:15.5px; color:var(--d-ink);
+  background:#fbfbfe; border:1px solid var(--d-line); border-radius:14px;
+  padding:14px 15px; transition:.22s ease;
+}
+.d-field textarea{min-height:132px; resize:vertical; line-height:1.55}
+.d-field input::placeholder, .d-field textarea::placeholder{color:#9c9cba}
+.d-field input:focus, .d-field select:focus, .d-field textarea:focus{
+  outline:none; border-color:var(--d-violet); background:#fff;
+  box-shadow:0 0 0 3px rgba(109,94,240,.18);
+}
+.d-check{display:flex; align-items:flex-start; gap:11px; font-size:14px; line-height:1.55; color:var(--d-ink-2)}
+.d-check input{width:17px; height:17px; margin-top:2px; accent-color:var(--d-violet)}
+.d-form .d-btn{width:100%; justify-content:center; margin-top:18px}
+.d-note{margin:13px 0 0; font-size:12.5px; line-height:1.55; color:var(--d-ink-3)}
+.d-status{
+  margin:14px 0 0; padding:12px 14px; border-radius:12px;
+  font-size:14px; line-height:1.5; border:1px solid transparent;
+}
+.d-status.ok{background:rgba(13,148,136,.09); border-color:rgba(13,148,136,.3); color:#0b6f66}
+.d-status.bad{background:rgba(224,92,92,.09); border-color:rgba(224,92,92,.32); color:#a5342f}
+.d-btn[disabled]{opacity:.6; cursor:progress; transform:none !important; box-shadow:none !important}
+
+.d-side{display:grid; gap:16px}
+.d-panel{
+  background:var(--d-glass); border:1px solid var(--d-line); border-radius:22px;
+  padding:clamp(20px,2.4vw,26px); backdrop-filter:blur(6px);
+  box-shadow:0 20px 44px -38px rgba(18,18,43,.5);
+}
+.d-panel h3{font-family:var(--dsp); font-weight:600; margin:0 0 12px; font-size:16.5px; letter-spacing:-.015em}
+.d-mail{
+  display:inline-block; font-family:var(--dsp); font-weight:600;
+  font-size:clamp(18px,1.9vw,24px); letter-spacing:-.025em; text-decoration:none;
+  background:linear-gradient(100deg,#0f0f24,#5b4bd6 58%,#0ea5b7);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.d-panel p{margin:12px 0 0; font-size:14px; line-height:1.6; color:var(--d-ink-2)}
+.d-list{margin:0; padding:0; list-style:none; display:grid; gap:11px}
+.d-list li{position:relative; padding-left:18px; font-size:14.5px; line-height:1.55; color:var(--d-ink-2)}
+.d-list li::before{content:""; position:absolute; left:0; top:8px; width:6px; height:6px; border-radius:50%; background:var(--d-violet)}
+.d-list a{color:var(--d-ink); font-weight:600; text-decoration:none; border-bottom:1px solid rgba(18,18,43,.22)}
+.d-list a:hover{border-bottom-color:var(--d-violet); color:#5b4bd6}
+
+/* ---------- scroll reveal ----------
+   Everything marked .reveal animates the first time it enters the viewport
+   and re-arms when you switch back to the page. Modifier classes pick the
+   direction: rv-scale, rv-blur, rv-left, rv-right. */
+@media (prefers-reduced-motion:no-preference){
+  .reveal{
+    opacity:0; transform:translateY(24px);
+    transition:opacity .85s cubic-bezier(.2,.7,.2,1),
+               transform .85s cubic-bezier(.2,.7,.2,1),
+               filter .85s ease;
+    transition-delay:var(--rd,0ms);
+    will-change:opacity, transform;
+  }
+  .reveal.rv-scale{transform:scale(.93)}
+  .reveal.rv-blur {transform:translateY(16px); filter:blur(12px)}
+  .reveal.rv-left {transform:translateX(-34px)}
+  .reveal.rv-right{transform:translateX(34px)}
+  .reveal.in{opacity:1; transform:none; filter:none}
+}
+/* the accent rule under a section title draws itself in */
+.d-sec h2{position:relative; padding-bottom:14px}
+.d-sec h2::after{
+  content:""; position:absolute; left:0; bottom:0; height:3px; width:0; border-radius:2px;
+  background:linear-gradient(90deg,var(--d-violet),var(--d-cyan));
+  transition:width 1s cubic-bezier(.2,.7,.2,1) .18s;
+}
+.d-sec.in h2::after{width:78px}
+
+/* scroll progress — only while a doc page is open */
+.scroll-progress{
+  position:fixed; top:0; left:0; z-index:60;
+  height:3px; width:100%; transform:scaleX(0); transform-origin:0 50%;
+  background:linear-gradient(90deg,#6d5ef0,#0ea5b7);
+  opacity:0; transition:opacity .35s ease; pointer-events:none;
+}
+body.doc .scroll-progress{opacity:1}
+
+/* ============================================================
+   SITE FOOTER — only the About and Contact pages carry one.
+   Deliberately dark: it closes the light page the way thinkhat.ai does.
+   ============================================================ */
+.sitefoot{background:#0d0d1e; color:#f5f5fc}
+.sitefoot-inner{
+  max-width:1180px; margin:0 auto;
+  padding:clamp(40px,6vh,72px) 28px clamp(24px,3vh,32px);
+  display:grid; gap:clamp(26px,4vw,54px);
+  grid-template-columns:1.7fr 1fr 1.2fr;
+}
+@media (max-width:860px){ .sitefoot-inner{grid-template-columns:1fr; gap:30px} }
+.sitefoot .fbrand{font-family:var(--display); font-weight:600; font-size:22px; letter-spacing:-.02em}
+.sitefoot .fbrand span{color:#9494b8}
+.sitefoot .fabout{margin:16px 0 0; max-width:430px; font-family:var(--sans); font-size:14.5px; line-height:1.68; color:#adadc9}
+.sitefoot h4{
+  margin:0 0 16px; font-family:var(--mono);
+  font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:#8383a8;
+}
+.sitefoot ul{margin:0; padding:0; list-style:none; display:grid; gap:12px}
+.sitefoot a{font-family:var(--sans); font-size:14.5px; color:#dcdcee; text-decoration:none; transition:.2s ease}
+.sitefoot a:hover{color:#fff}
+.sitefoot .fmail{
+  font-family:var(--display); font-weight:600; font-size:18px; letter-spacing:-.02em;
+  background:linear-gradient(100deg,#fff,#c3baff 58%,#6fe3ea);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sitefoot-bottom{
+  border-top:1px solid rgba(255,255,255,.10);
+  max-width:1180px; margin:0 auto;
+  padding:18px 28px clamp(24px,3vh,34px);
+  display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  font-family:var(--mono);
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8383a8;
+}
+.sitefoot-bottom a{font-family:inherit; font-size:11px; letter-spacing:.1em; color:#adadc9}
+
+/* ---------- unrolled fallback (narrow or very short windows) ----------
+   JS adds .flow to <body> when the circle would be too small to read. */
+body.flow main{display:block}
+body.flow .page{padding:22px 18px 40px}
+body.flow .page.is-active{display:block}
+body.flow .stage-wrap{display:block}
+body.flow .stage{
+  container-type:normal; --u:1px;
+  width:100%; height:auto;
+  display:flex; flex-direction:column; align-items:center; gap:16px; padding:26px 0 10px;
+}
+body.flow .orbit{position:static; display:flex; flex-direction:column; gap:16px;
+  width:100%; height:auto}
+body.flow .stage{order:-1}
+body.flow .ring{position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:min(620px,108vw); height:min(620px,108vw); inset:auto; opacity:.8;
+  animation:ringSpin 16s linear infinite}
+@keyframes ringSpin{
+  from{transform:translateX(-50%) rotate(0deg)}
+  to  {transform:translateX(-50%) rotate(360deg)}
+}
+body.flow .spokes, body.flow .watermark{display:none}
+body.flow .hub{position:static; transform:none;
+  width:min(300px,72vw); height:min(300px,72vw); order:-1}
+body.flow .node{position:static; transform:none; animation:none; width:min(460px,92vw) !important; margin:0 auto}
+@media (max-width:880px){
+  .topbar{padding:14px 16px; flex-wrap:wrap}
+}
+/* short windows (laptops): shrink the chrome so the circle gets the height */
+@media (max-height:820px) and (min-width:561px){
+  .topbar{padding:11px 34px}
+  .pagehead h1{font-size:clamp(22px,3.8vh,34px)}
+  .pagehead .domain{display:none}
+}
+
+/* ---------- tab-switch transition: LIVING ORBIT + WARP ----------
+   At rest the six cards drift slowly around the circle, each on its own
+   phase, and the ring turns behind them — the page is never quite still.
+   On a tab change the whole orbit spins up: angular velocity ramps, motion
+   blur builds, the cards fling outward and fade, and the next product's six
+   decelerate back into their places.
+   Every rotation is paired with an equal unwind, so a card stays square to
+   the page however far round the orbit carries it.
+   --dir is set by JS: +1 moving right through the menu, -1 moving left. */
+.stage, .node{will-change:transform,filter,opacity}
+
+/* ---- the idle: a slow drift around the orbit, desynced per card ---- */
+@keyframes orbitDrift{
+  from{
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) + var(--sway,1deg)))
+              translateX(calc(var(--rad,0px) * 1.008))
+              rotate(calc((var(--ang,0deg) + var(--sway,1deg)) * -1));
+  }
+  to{
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) - var(--sway,1deg)))
+              translateX(calc(var(--rad,0px) * .992))
+              rotate(calc((var(--ang,0deg) - var(--sway,1deg)) * -1));
+  }
+}
+/* --sway is set per card by JS from the real gap to its neighbour, so the
+   drift can never bring two cards close enough to overlap or to disturb
+   reading. It is a slow float, not a movement you have to wait out. */
+.node{
+  animation:orbitDrift calc(13s + var(--i,0) * 1.6s) ease-in-out infinite alternate;
+  animation-delay:calc(var(--i,0) * -3.1s);
+}
+@keyframes ringDrift{from{transform:rotate(0deg)} to{transform:rotate(360deg)}}
+.ring{animation:ringDrift 120s linear infinite}
+
+/* ---- the warp ---- */
+.page.is-entering .stage{animation:warpRingIn .86s cubic-bezier(.14,.75,.2,1) both}
+.page.is-leaving  .stage{animation:warpRingOut .82s cubic-bezier(.5,0,.9,.3) both}
+.page.is-entering .node{animation:warpIn .8s cubic-bezier(.14,.75,.2,1) both;
+  animation-delay:calc(var(--i,0) * 35ms + 60ms)}
+.page.is-leaving  .node{animation:warpOut .72s cubic-bezier(.5,0,.9,.3) both;
+  animation-delay:calc(var(--i,0) * 35ms)}
+.page.is-entering .pagehead{animation:headIn .55s .2s ease both}
+.page.is-leaving  .pagehead{animation:headOut .34s ease both}
+
+/* cards: the orbit spins up, then the radius collapses and the card shrinks
+   away into the middle of the circle */
+@keyframes warpOut{
+  0%{
+    opacity:1; filter:blur(0);
+    transform:translate(-50%,-50%)
+              rotate(var(--ang,0deg)) translateX(var(--rad,0px))
+              rotate(calc(var(--ang,0deg) * -1)) scale(1);
+  }
+  26%{
+    opacity:1; filter:blur(1.5px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) + var(--dir,1) * 62deg))
+              translateX(calc(var(--rad,0px) * 1.02))
+              rotate(calc((var(--ang,0deg) + var(--dir,1) * 62deg) * -1)) scale(.95);
+  }
+  70%{
+    opacity:.72; filter:blur(5px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) + var(--dir,1) * 300deg))
+              translateX(calc(var(--rad,0px) * .42))
+              rotate(calc((var(--ang,0deg) + var(--dir,1) * 300deg) * -1)) scale(.46);
+  }
+  100%{
+    opacity:0; filter:blur(11px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) + var(--dir,1) * 640deg))
+              translateX(0px)
+              rotate(calc((var(--ang,0deg) + var(--dir,1) * 640deg) * -1)) scale(.1);
+  }
+}
+/* and the next product's six are born out of the circle, growing back to size
+   as the orbit carries them out to their places */
+@keyframes warpIn{
+  0%{
+    opacity:0; filter:blur(11px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) - var(--dir,1) * 640deg))
+              translateX(0px)
+              rotate(calc((var(--ang,0deg) - var(--dir,1) * 640deg) * -1)) scale(.1);
+  }
+  45%{
+    opacity:.85; filter:blur(4px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) - var(--dir,1) * 210deg))
+              translateX(calc(var(--rad,0px) * .5))
+              rotate(calc((var(--ang,0deg) - var(--dir,1) * 210deg) * -1)) scale(.52);
+  }
+  100%{
+    opacity:1; filter:blur(0);
+    transform:translate(-50%,-50%)
+              rotate(var(--ang,0deg)) translateX(var(--rad,0px))
+              rotate(calc(var(--ang,0deg) * -1)) scale(1);
+  }
+}
+/* the circle spins up with them */
+@keyframes warpRingOut{
+  from{opacity:1; filter:blur(0);    transform:rotate(0deg) scale(1)}
+  to  {opacity:0; filter:blur(12px); transform:rotate(calc(var(--dir,1) * 640deg)) scale(.8)}
+}
+@keyframes warpRingIn{
+  from{opacity:0; filter:blur(12px); transform:rotate(calc(var(--dir,1) * -640deg)) scale(.82)}
+  to  {opacity:1; filter:blur(0);    transform:rotate(0deg) scale(1)}
+}
+
+@keyframes headIn{
+  from{opacity:0; filter:blur(8px); transform:translateY(10px)}
+  to  {opacity:1; filter:blur(0);   transform:none}
+}
+@keyframes headOut{
+  from{opacity:1; filter:blur(0)}
+  to  {opacity:0; filter:blur(8px); transform:translateY(-8px)}
+}
+
+/* phone layout: the unrolled list just cross-fades — no orbit, no warp;
+   only the ring keeps spinning (see body.flow .ring above) */
+body.flow .page.is-entering .stage,
+body.flow .page.is-leaving .stage,
+body.flow .page.is-entering .node,
+body.flow .page.is-leaving .node{animation:none}
+body.flow .page.is-entering .orbit{animation:orbitFade .5s ease both}
+body.flow .page.is-leaving .orbit{animation:orbitFadeOut .3s ease both}
+@keyframes orbitFade{from{opacity:0; filter:blur(6px)} to{opacity:1; filter:blur(0)}}
+@keyframes orbitFadeOut{from{opacity:1; filter:blur(0)} to{opacity:0; filter:blur(6px)}}
+
+@media (prefers-reduced-motion:reduce){
+  .stage, .node, .orbit, .pagehead, .ring{animation:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" aria-hidden="true"></div>
+
+<!-- =================== TOP BAR / PRODUCT MENU =================== -->
+<header class="topbar">
+  <a class="brand" href="#supper">
+    <span class="mark">
+      <img src="Zosa-Agentic-Logo-transparent.png" alt="Zosa Agentic logo">
+    </span>
+    <span class="wm">ZOSA <span>AGENTIC</span></span>
+  </a>
+
+  <nav class="menu" id="menu" aria-label="Products">
+    <button data-target="supper"      style="--pill:#d97a12"><span class="dot"></span>Supper</button>
+    <button data-target="graceabides" style="--pill:#6d5ef0"><span class="dot"></span>GraceAbides</button>
+    <button data-target="scribe"      style="--pill:#0d9488"><span class="dot"></span>Zosa Scribe</button>
+    <span class="sep" aria-hidden="true"></span>
+    <button data-target="about"       style="--pill:#7b7b9c"><span class="dot"></span>About</button>
+    <button data-target="contact"     style="--pill:#7b7b9c"><span class="dot"></span>Contact</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============================================================
+     PRODUCT 1 — SUPPER
+     ============================================================ -->
+<section class="page is-active" id="page-supper"
+         style="--accent:#d97a12; --accent-soft:rgba(217,122,18,.10)">
+
+  <div class="pagehead">
+    <p class="eyebrow">Consumer Fintech · Telco</p>
+    <h1>Supper</h1>
+    <div class="domain">the-supper.co</div>
+  </div>
+
+  <div class="stage-wrap">
+  <div class="orbit">
+
+    <article class="node" data-fx="-.70" data-fy="-.95" style="--i:0; --dly:0ms">
+    <span class="num">01 — OVERVIEW</span>
+    <h3>What it is</h3>
+    <p>An Australian MVNO mobile plan on the Telstra network that turns a monthly phone bill into a growing investment.</p>
+    </article>
+
+    <article class="node" data-fx="-1.0" data-fy="-.02" style="--i:1; --dly:40ms">
+    <span class="num">02 — KEY FEATURES</span>
+    <h3>How it works</h3>
+    <ul>
+    <li>Auto-invests <strong>5% of every bill</strong> into ASX-listed ETF units</li>
+    <li>Funded from margin — <strong>no extra cost</strong> to the member</li>
+    <li>Optional <strong>Boost</strong> and <strong>Round-Ups</strong></li>
+    </ul>
+    </article>
+
+    <article class="node" data-fx="-.72" data-fy=".95" style="--i:2; --dly:80ms">
+    <span class="num">03 — PLATFORM</span>
+    <h3>Delivery</h3>
+    <p>Native <strong>iOS + Android</strong> apps, delivered end to end — discovery and architecture through launch and iteration.</p>
+    </article>
+
+    <div class="stage">
+    <div class="ring"></div>
+    <div class="watermark">Supper</div>
+    <!-- decorative spokes + inner orbit -->
+    <svg class="spokes" viewBox="0 0 880 880" aria-hidden="true">
+      <circle cx="440" cy="440" r="305" fill="none" stroke="currentColor" stroke-opacity=".10"
+              stroke-dasharray="2 7" style="color:var(--accent)"/>
+    </svg>
+    <!-- ---------- centre product visual ---------- -->
+    <div class="hub">
+      <div class="hub-plate">
+        <svg viewBox="0 0 300 300" role="img" aria-label="Supper mobile app: phone showing bill and auto-invested amount">
+          <defs>
+            <linearGradient id="supGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#d97a12"/><stop offset="1" stop-color="#fbbf24"/>
+            </linearGradient>
+          </defs>
+          <!-- phone body -->
+          <rect x="90" y="22" width="120" height="224" rx="22" fill="#12122b"/>
+          <rect x="95" y="27" width="110" height="214" rx="18" fill="#fffdf8"/>
+          <rect x="136" y="33" width="28" height="4" rx="2" fill="#12122b" opacity=".35"/>
+          <!-- signal / plan header -->
+          <g transform="translate(104,48)">
+            <rect width="92" height="34" rx="9" fill="url(#supGrad)"/>
+            <text x="10" y="14" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="6.8" fill="#fff" opacity=".85">TELSTRA NETWORK</text>
+            <text x="10" y="27" font-family="Manrope,sans-serif" font-size="10" font-weight="700" fill="#fff">Plan · $45 / mo</text>
+          </g>
+          <!-- donut: 5% invested -->
+          <g transform="translate(150,130)">
+            <circle r="30" fill="none" stroke="#f2e9dd" stroke-width="8"/>
+            <circle r="30" fill="none" stroke="url(#supGrad)" stroke-width="8"
+                    stroke-linecap="round" stroke-dasharray="9.4 179" transform="rotate(-90)"/>
+            <text y="-1" text-anchor="middle" font-family="Manrope,sans-serif" font-size="15" font-weight="800" fill="#12122b">5%</text>
+            <text y="11" text-anchor="middle" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="6" fill="#6e6e8f">INVESTED</text>
+          </g>
+          <!-- ETF growth chart -->
+          <g transform="translate(104,174)">
+            <rect width="92" height="52" rx="9" fill="#faf6f0" stroke="#f2e6d3"/>
+            <text x="9" y="13" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="6" fill="#6e6e8f">ASX ETF UNITS</text>
+            <polyline points="9,40 24,34 37,37 50,26 64,29 79,17"
+                      fill="none" stroke="url(#supGrad)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="79" cy="17" r="2.8" fill="#d97a12"/>
+          </g>
+          <!-- floating badges -->
+          <g font-family="Manrope,sans-serif" font-size="8.4" font-weight="600">
+            <g transform="translate(6,80)">
+              <rect width="72" height="25" rx="12.5" fill="#fff" stroke="#f2e6d3"/>
+              <circle cx="14" cy="12.5" r="5.5" fill="#d97a12" opacity=".15"/>
+              <text x="14" y="16" text-anchor="middle" font-size="7.4" fill="#d97a12">↑</text>
+              <text x="26" y="16" fill="#3d3d5c">Boost</text>
+            </g>
+            <g transform="translate(220,116)">
+              <rect width="78" height="25" rx="12.5" fill="#fff" stroke="#f2e6d3"/>
+              <circle cx="14" cy="12.5" r="5.5" fill="#d97a12" opacity=".15"/>
+              <text x="14" y="16" text-anchor="middle" font-size="7.4" fill="#d97a12">∿</text>
+              <text x="26" y="16" fill="#3d3d5c">Round-Ups</text>
+            </g>
+            <g transform="translate(214,186)">
+              <rect width="84" height="25" rx="12.5" fill="#fff" stroke="#f2e6d3"/>
+              <text x="11" y="16" fill="#3d3d5c">No extra cost</text>
+            </g>
+            <g transform="translate(8,190)">
+              <rect width="80" height="25" rx="12.5" fill="#fff" stroke="#f2e6d3"/>
+              <text x="11" y="16" fill="#3d3d5c">iOS + Android</text>
+            </g>
+          </g>
+          <text x="150" y="270" text-anchor="middle" font-family="IBM Plex Mono,ui-monospace,monospace"
+                font-size="7.4" letter-spacing="1.6" fill="#6e6e8f">BILL → INVESTMENT</text>
+        </svg>
+      </div>
+    </div>
+    <!-- ---------- info nodes ---------- -->
+    </div>
+
+    <article class="node" data-fx=".70" data-fy="-.95" style="--i:3; --dly:120ms">
+    <span class="num">04 — TRACTION</span>
+    <h3>Founding cohort</h3>
+    <div class="stat">500 members</div>
+    <p>Founding cohort onboarded ahead of public launch.</p>
+    </article>
+
+    <article class="node" data-fx="1.0" data-fy="-.02" style="--i:4; --dly:160ms">
+    <span class="num">05 — WHO IT'S FOR</span>
+    <h3>Audience</h3>
+    <p>Australian mobile users who want long-term investing to happen quietly in the background of a bill they already pay.</p>
+    </article>
+
+    <article class="node" data-fx=".72" data-fy=".95" style="--i:5; --dly:200ms">
+    <span class="num">06 — SECTOR</span>
+    <h3>Category</h3>
+    <div class="chips">
+    <span class="chip">CONSUMER FINTECH</span>
+    <span class="chip">TELCO · MVNO</span>
+    <span class="chip">ASX ETF</span>
+    </article>
+    </div>
+
+  </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     PRODUCT 2 — GRACEABIDES
+     ============================================================ -->
+<section class="page" id="page-graceabides"
+         style="--accent:#6d5ef0; --accent-soft:rgba(109,94,240,.10)">
+
+  <div class="pagehead">
+    <p class="eyebrow">Faith Community · Matrimony</p>
+    <h1>GraceAbides</h1>
+    <div class="domain">matrimony platform</div>
+  </div>
+
+  <div class="stage-wrap">
+  <div class="orbit">
+
+    <article class="node" data-fx="-.70" data-fy="-.95" style="--i:0; --dly:0ms">
+    <span class="num">01 — OVERVIEW</span>
+    <h3>What it is</h3>
+    <p>A pastor-centred matrimony platform for the Christian community, built around the trust that already exists inside a congregation.</p>
+    </article>
+
+    <article class="node" data-fx="-1.0" data-fy="-.02" style="--i:1; --dly:40ms">
+    <span class="num">02 — KEY FEATURES</span>
+    <h3>How it works</h3>
+    <ul>
+    <li>Pastors authorize introductions between members of their congregations</li>
+    <li><strong>Connection-and-alliance</strong> workflow</li>
+    <li>Wedding-vendor marketplace</li>
+    </ul>
+    </article>
+
+    <article class="node" data-fx="-.72" data-fy=".95" style="--i:2; --dly:80ms">
+    <span class="num">03 — VERIFICATION</span>
+    <h3>Identity &amp; trust</h3>
+    <p>Every member is identity-verified through <strong>video KYC</strong> and background verification before an introduction is possible.</p>
+    </article>
+
+    <div class="stage">
+    <div class="ring"></div>
+    <div class="watermark">GraceAbides</div>
+    <svg class="spokes" viewBox="0 0 880 880" aria-hidden="true">
+      <circle cx="440" cy="440" r="305" fill="none" stroke="currentColor" stroke-opacity=".10"
+              stroke-dasharray="2 7" style="color:var(--accent)"/>
+    </svg>
+    <div class="hub">
+      <div class="hub-plate">
+        <svg viewBox="0 0 300 300" role="img" aria-label="GraceAbides: pastor authorising a verified introduction between two members">
+          <defs>
+            <linearGradient id="covGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#6d5ef0"/><stop offset="1" stop-color="#a78bfa"/>
+            </linearGradient>
+          </defs>
+          <!-- pastor node (top centre) -->
+          <g transform="translate(150,58)">
+            <circle r="28" fill="url(#covGrad)"/>
+            <circle cy="-6" r="8" fill="#fff" opacity=".95"/>
+            <path d="M-13 14a13 13 0 0 1 26 0z" fill="#fff" opacity=".95"/>
+            <path d="M0 -20v-8M-4 -24h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+            <text y="46" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10" font-weight="700" fill="#12122b">Pastor</text>
+            <text y="58" text-anchor="middle" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="6.2" fill="#6e6e8f">PASTORS AUTHORIZATION</text>
+          </g>
+          <!-- connecting lines -->
+          <path d="M114 128 Q90 148 80 164" fill="none" stroke="#6d5ef0" stroke-opacity=".35" stroke-width="2" stroke-dasharray="4 5"/>
+          <path d="M186 128 Q210 148 220 164" fill="none" stroke="#6d5ef0" stroke-opacity=".35" stroke-width="2" stroke-dasharray="4 5"/>
+          <!-- two member cards -->
+          <g transform="translate(30,168)">
+            <rect width="96" height="72" rx="12" fill="#fff" stroke="#e6e6f0"/>
+            <circle cx="24" cy="26" r="13" fill="#efedff"/>
+            <circle cx="24" cy="22" r="4.6" fill="#6d5ef0" opacity=".6"/>
+            <path d="M17 33a7.4 7.4 0 0 1 14 0z" fill="#6d5ef0" opacity=".6"/>
+            <rect x="44" y="17" width="42" height="5" rx="2.5" fill="#12122b" opacity=".65"/>
+            <rect x="44" y="27" width="30" height="4" rx="2" fill="#12122b" opacity=".25"/>
+            <g transform="translate(12,48)">
+              <rect width="72" height="15" rx="7.5" fill="#efedff"/>
+              <text x="8" y="10.4" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="6" fill="#6d5ef0">✓ VIDEO KYC · BGV</text>
+            </g>
+          </g>
+          <g transform="translate(174,168)">
+            <rect width="96" height="72" rx="12" fill="#fff" stroke="#e6e6f0"/>
+            <circle cx="24" cy="26" r="13" fill="#efedff"/>
+            <circle cx="24" cy="22" r="4.6" fill="#a78bfa" opacity=".7"/>
+            <path d="M17 33a7.4 7.4 0 0 1 14 0z" fill="#a78bfa" opacity=".7"/>
+            <rect x="44" y="17" width="42" height="5" rx="2.5" fill="#12122b" opacity=".65"/>
+            <rect x="44" y="27" width="26" height="4" rx="2" fill="#12122b" opacity=".25"/>
+            <g transform="translate(12,48)">
+              <rect width="72" height="15" rx="7.5" fill="#efedff"/>
+              <text x="8" y="10.4" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="6" fill="#6d5ef0">✓ CONSENT ON FILE</text>
+            </g>
+          </g>
+          <!-- rings joined -->
+          <g transform="translate(150,204)" fill="none" stroke="url(#covGrad)" stroke-width="2.6">
+            <circle cx="-7" r="9"/><circle cx="7" r="9"/>
+          </g>
+          <text x="150" y="266" text-anchor="middle" font-family="IBM Plex Mono,ui-monospace,monospace"
+                font-size="7.4" letter-spacing="1.6" fill="#6e6e8f">CONNECTION → ALLIANCE</text>
+        </svg>
+      </div>
+    </div>
+    </div>
+
+    <article class="node" data-fx=".70" data-fy="-.95" style="--i:3; --dly:120ms">
+    <span class="num">04 — COMPLIANCE</span>
+    <h3>Consent-first by design</h3>
+    <div class="chips">
+    <span class="chip">CONSENT-FIRST</span>
+    <span class="chip">VIDEO KYC · BGV</span>
+    <span class="chip">DPDP-ALIGNED</span>
+    </article>
+
+    <article class="node" data-fx="1.0" data-fy="-.02" style="--i:4; --dly:160ms">
+    <span class="num">05 — WHO IT'S FOR</span>
+    <h3>Audience</h3>
+    <p>Pastors and their congregations — and verified, consenting adult members seeking marriage within their faith community.</p>
+    </article>
+
+    <article class="node" data-fx=".72" data-fy=".95" style="--i:5; --dly:200ms">
+    <span class="num">06 — SECTOR</span>
+    <h3>Category</h3>
+    <div class="chips">
+    <span class="chip">FAITH COMMUNITY</span>
+    <span class="chip">MARKETPLACE</span>
+    </div>
+    </article>
+    </div>
+
+  </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     PRODUCT 3 — ZOSA SCRIBE
+     ============================================================ -->
+<section class="page" id="page-scribe"
+         style="--accent:#0d9488; --accent-soft:rgba(13,148,136,.10)">
+
+  <div class="pagehead">
+    <p class="eyebrow">Clinical AI</p>
+    <h1>Zosa Scribe</h1>
+    <div class="domain">zosa-agentic.ai</div>
+  </div>
+
+  <div class="stage-wrap">
+  <div class="orbit">
+
+    <article class="node" data-fx="-.70" data-fy="-.95" style="--i:0; --dly:0ms">
+    <span class="num">01 — OVERVIEW</span>
+    <h3>What it is</h3>
+    <p>An AI medical scribe that listens to the doctor–patient conversation and returns a structured SOAP note in about five seconds.</p>
+    </article>
+
+    <article class="node" data-fx="-1.0" data-fy="-.02" style="--i:1; --dly:40ms">
+    <span class="num">02 — KEY FEATURES</span>
+    <h3>In every note</h3>
+    <ul>
+    <li>Vitals and exam findings</li>
+    <li>Diagnosis and medications</li>
+    <li>Follow-up plan, already in place</li>
+    </ul>
+    </article>
+
+    <article class="node" data-fx="-.72" data-fy=".95" style="--i:2; --dly:80ms">
+    <span class="num">03 — LANGUAGES</span>
+    <h3>11 languages</h3>
+    <p>English, Hindi, Urdu, Telugu, Tamil, Spanish and Arabic among them — built for real multilingual consultations.</p>
+    </article>
+
+    <div class="stage">
+    <div class="ring"></div>
+    <div class="watermark">Scribe</div>
+    <svg class="spokes" viewBox="0 0 880 880" aria-hidden="true">
+      <circle cx="440" cy="440" r="305" fill="none" stroke="currentColor" stroke-opacity=".10"
+              stroke-dasharray="2 7" style="color:var(--accent)"/>
+    </svg>
+    <div class="hub">
+      <div class="hub-plate">
+        <svg viewBox="0 0 300 300" role="img" aria-label="Zosa Scribe: conversation waveform converted into a structured SOAP note">
+          <defs>
+            <linearGradient id="scrGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#0d9488"/><stop offset="1" stop-color="#2dd4bf"/>
+            </linearGradient>
+            <!-- userSpaceOnUse so it also works on zero-width vertical strokes -->
+            <linearGradient id="scrWave" gradientUnits="userSpaceOnUse" x1="92" y1="110" x2="208" y2="110">
+              <stop offset="0" stop-color="#0d9488"/><stop offset="1" stop-color="#2dd4bf"/>
+            </linearGradient>
+          </defs>
+          <!-- consult: doctor + patient -->
+          <g transform="translate(150,52)" font-family="Manrope,sans-serif">
+            <g transform="translate(-46,0)">
+              <circle r="15" fill="#e6f7f5"/><circle cy="-4" r="5.2" fill="#0d9488" opacity=".65"/>
+              <path d="M-8 6a8 8 0 0 1 16 0z" fill="#0d9488" opacity=".65"/>
+              <text y="27" text-anchor="middle" font-size="7.4" fill="#3d3d5c">Doctor</text>
+            </g>
+            <g transform="translate(46,0)">
+              <circle r="15" fill="#e6f7f5"/><circle cy="-4" r="5.2" fill="#2dd4bf" opacity=".8"/>
+              <path d="M-8 6a8 8 0 0 1 16 0z" fill="#2dd4bf" opacity=".8"/>
+              <text y="27" text-anchor="middle" font-size="7.4" fill="#3d3d5c">Patient</text>
+            </g>
+            <path d="M-27 0h54" stroke="#0d9488" stroke-opacity=".3" stroke-width="1.6" stroke-dasharray="3 4"/>
+          </g>
+          <!-- waveform -->
+          <g transform="translate(150,110)" stroke="url(#scrWave)" stroke-width="3.4" stroke-linecap="round">
+            <g>
+              <line x1="-58" y1="-5" x2="-58" y2="5"/><line x1="-48" y1="-11" x2="-48" y2="11"/>
+              <line x1="-38" y1="-18" x2="-38" y2="18"/><line x1="-28" y1="-9" x2="-28" y2="9"/>
+              <line x1="-18" y1="-15" x2="-18" y2="15"/><line x1="-8" y1="-22" x2="-8" y2="22"/>
+              <line x1="2"  y1="-10" x2="2"  y2="10"/><line x1="12" y1="-17" x2="12" y2="17"/>
+              <line x1="22" y1="-7"  x2="22" y2="7"/><line x1="32" y1="-13" x2="32" y2="13"/>
+              <line x1="42" y1="-19" x2="42" y2="19"/><line x1="52" y1="-6"  x2="52" y2="6"/>
+            </g>
+          </g>
+          <!-- arrow + 5s badge -->
+          <g transform="translate(150,144)">
+            <path d="M0 -6v12" stroke="#0d9488" stroke-opacity=".4" stroke-width="1.6"/>
+            <path d="M-4 4l4 5 4-5" fill="none" stroke="#0d9488" stroke-opacity=".4" stroke-width="1.6" stroke-linecap="round"/>
+            <g transform="translate(30,-6)">
+              <rect width="52" height="17" rx="8.5" fill="#e6f7f5"/>
+              <text x="26" y="11.6" text-anchor="middle" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="7" fill="#0d9488">~5 SECONDS</text>
+            </g>
+          </g>
+          <!-- SOAP note card -->
+          <g transform="translate(66,164)">
+            <rect width="168" height="86" rx="12" fill="#fff" stroke="#e6e6f0"/>
+            <rect x="0" y="0" width="168" height="20" rx="12" fill="url(#scrGrad)"/>
+            <rect x="0" y="12" width="168" height="8" fill="url(#scrGrad)"/>
+            <text x="10" y="14" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="7.4" fill="#fff" letter-spacing="1">SOAP NOTE</text>
+            <g font-family="Manrope,sans-serif" font-size="7.4" fill="#12122b">
+              <text x="10" y="34" font-weight="700" fill="#0d9488">S</text><rect x="20" y="29" width="82" height="4.6" rx="2.3" fill="#12122b" opacity=".22"/>
+              <text x="10" y="46" font-weight="700" fill="#0d9488">O</text><rect x="20" y="41" width="128" height="4.6" rx="2.3" fill="#12122b" opacity=".22"/>
+              <text x="10" y="58" font-weight="700" fill="#0d9488">A</text><rect x="20" y="53" width="66" height="4.6" rx="2.3" fill="#12122b" opacity=".22"/>
+              <text x="10" y="70" font-weight="700" fill="#0d9488">P</text><rect x="20" y="65" width="104" height="4.6" rx="2.3" fill="#12122b" opacity=".22"/>
+            </g>
+            <g transform="translate(100,3.5)" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="5.6" fill="#0d9488">
+              <rect width="58" height="13" rx="6.5" fill="#fff" fill-opacity=".92"/>
+              <text x="29" y="9" text-anchor="middle">11 LANGUAGES</text>
+            </g>
+          </g>
+          <text x="150" y="270" text-anchor="middle" font-family="IBM Plex Mono,ui-monospace,monospace"
+                font-size="7.4" letter-spacing="1.6" fill="#6e6e8f">CONVERSATION → SOAP NOTE</text>
+        </svg>
+      </div>
+    </div>
+    </div>
+
+    <article class="node" data-fx=".70" data-fy="-.95" style="--i:3; --dly:120ms">
+    <span class="num">04 — COMPLIANCE</span>
+    <h3>Cleared for clinical use</h3>
+    <div class="chips">
+    <span class="chip">CERT-IN AUDIT CLEARED</span>
+    <span class="chip">DPDP · INDIAN HEALTHCARE</span>
+    <span class="chip">HIPAA · FHIR READY</span>
+    </article>
+
+    <article class="node" data-fx="1.0" data-fy="-.02" style="--i:4; --dly:160ms">
+    <span class="num">05 — WHO IT'S FOR</span>
+    <h3>Audience</h3>
+    <p>Clinicians who would rather spend the consultation with the patient than with the keyboard — human-in-the-loop before anything is signed.</p>
+    </article>
+
+    <article class="node" data-fx=".72" data-fy=".95" style="--i:5; --dly:200ms">
+    <span class="num">06 — SPEED</span>
+    <h3>Turnaround</h3>
+    <div class="stat">~5 seconds</div>
+    <p>From end of conversation to a reviewable, structured note.</p>
+    </article>
+    </div>
+
+  </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     ABOUT
+     ============================================================ -->
+<section class="page doc" id="page-about">
+
+  <div class="doc-inner">
+    <div class="d-hero">
+      <p class="d-eyebrow reveal">About</p>
+      <h1 class="d-h1 reveal rv-blur" style="--rd:60ms">
+        AI engineering<br><span class="grad">built for healthcare</span>
+      </h1>
+      <p class="d-sub reveal" style="--rd:120ms">Production-grade AI/ML, shipped as real products.</p>
+      <p class="d-lead reveal" style="--rd:180ms">
+        <strong>Zosa Agentic</strong> is a team of high-caliber software engineers pairing
+        production-grade AI/ML with deep healthcare and life-sciences domain expertise.
+        We take systems the whole way &mdash; discovery, architecture, build, audit,
+        launch and iteration.
+      </p>
+    </div>
+
+    <div class="d-stats">
+      <div class="d-stat reveal rv-scale"><b>3 products</b><span>Shipped in 5 months</span></div>
+      <div class="d-stat reveal rv-scale" style="--rd:70ms"><b>CERT-In</b><span>Security audit</span></div>
+      <div class="d-stat reveal rv-scale" style="--rd:140ms"><b>DPDP Act</b><span>Standards</span></div>
+      <div class="d-stat reveal rv-scale" style="--rd:210ms"><b>HIPAA &middot; SOC 2</b><span>FHIR &middot; GDPR &middot; DPDP ready</span></div>
+    </div>
+
+    <div class="d-sec reveal">
+      <h2>Engineering capabilities</h2>
+    </div>
+
+    <div class="d-grid">
+      <article class="d-card reveal rv-scale" style="--c:#6d5ef0">
+        <span class="n">AI / ML</span>
+        <h3>AI / ML Engineering</h3>
+        <p>LLM orchestration across providers, <strong>RAG</strong> (embeddings, chunking,
+        vector search), <strong>agentic systems</strong> (tool use, multi-step planning;
+        LangGraph, Temporal), and evaluation.</p>
+      </article>
+
+      <article class="d-card reveal rv-scale" style="--c:#8b5cf6; --rd:70ms">
+        <span class="n">PLATFORM</span>
+        <h3>Software Engineering</h3>
+        <p>AI ships inside real apps: backends &amp; APIs (<strong>NestJS, FastAPI</strong>),
+        frontends (<strong>React/Next.js</strong>, Redux), gateways (Kong/Apigee),
+        Firebase &amp; SMART-on-FHIR auth.</p>
+      </article>
+
+      <article class="d-card reveal rv-scale" style="--c:#0ea5b7; --rd:140ms">
+        <span class="n">INFRASTRUCTURE</span>
+        <h3>Cloud &amp; LLMOps</h3>
+        <p>Multi-cloud (<strong>GCP, AWS</strong>), containers &amp; orchestration, CI/CD,
+        DevSecOps (SAST, SCA); model and prompt versioning, deployment, monitoring,
+        latency &amp; <strong>cost control</strong>.</p>
+      </article>
+
+      <article class="d-card reveal rv-scale" style="--c:#e05c5c; --rd:210ms">
+        <span class="n">TRUST</span>
+        <h3>Security &amp; Compliance</h3>
+        <p>Decisive in healthcare: <strong>HIPAA/FHIR, SOC 2, GDPR, DPDP, ABDM</strong>;
+        plus AI threats &mdash; prompt injection, data exfiltration, PII leakage,
+        hallucination risk.</p>
+      </article>
+
+      <article class="d-card reveal rv-scale" style="--c:#d97a12; --rd:280ms">
+        <span class="n">PRODUCT</span>
+        <h3>AI-aware Product &amp; UX</h3>
+        <p>Designing for probabilistic systems: <strong>human-in-the-loop</strong> workflows,
+        graceful failure handling, transparency &amp; explainability, calibrated user trust.</p>
+      </article>
+
+      <article class="d-card reveal rv-scale" style="--c:#0d9488; --rd:350ms">
+        <span class="n">GOVERNANCE</span>
+        <h3>Responsible AI</h3>
+        <p>Guardrails, content moderation, <strong>bias &amp; fairness</strong> evaluation,
+        and clear accountability for model behaviour &mdash; governance built in.</p>
+      </article>
+    </div>
+
+    <div class="d-sec reveal">
+      <h2>What we bring</h2>
+    </div>
+
+    <div class="d-row">
+      <div class="d-mini reveal rv-left" style="--c:#6d5ef0">
+        <span class="bead"></span>
+        <div>
+          <h4>Domain Expertise</h4>
+          <p>Deep fluency in healthcare, clinical workflows and life sciences.</p>
+        </div>
+      </div>
+      <div class="d-mini reveal" style="--c:#8b5cf6; --rd:70ms">
+        <span class="bead"></span>
+        <div>
+          <h4>Research Literacy</h4>
+          <p>Adaptable to any domain through AI research literacy.</p>
+        </div>
+      </div>
+      <div class="d-mini reveal rv-right" style="--c:#0d9488; --rd:140ms">
+        <span class="bead"></span>
+        <div>
+          <h4>End-to-End Delivery</h4>
+          <p>Quality assurance, DevOps and results-focused delivery.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-cta reveal rv-scale">
+      <div>
+        <h2>Let&rsquo;s build together</h2>
+        <p>Tell us what you are building and where it is stuck.</p>
+      </div>
+      <div style="display:flex; gap:12px; flex-wrap:wrap">
+        <a class="d-btn" href="#contact">Start a conversation</a>
+        <a class="d-btn ghost" href="mailto:info@zosa-agentic.ai">info@zosa-agentic.ai</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="sitefoot">
+    <div class="sitefoot-inner">
+      <div>
+        <div class="fbrand">ZOSA <span>AGENTIC</span></div>
+        <p class="fabout">
+          A team of high-caliber software engineers pairing production-grade AI/ML with
+          deep healthcare and life-sciences domain expertise &mdash; shipping real
+          products, end to end.
+        </p>
+      </div>
+
+      <div>
+        <h4>Sitemap</h4>
+        <ul>
+          <li><a href="#supper">Supper</a></li>
+          <li><a href="#graceabides">GraceAbides</a></li>
+          <li><a href="#scribe">Zosa Scribe</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a class="fmail" href="mailto:info@zosa-agentic.ai">info@zosa-agentic.ai</a></li>
+          <li><a href="https://zosa-agentic.ai">zosa-agentic.ai</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sitefoot-bottom">
+      <span>2026 Zosa Agentic &copy; All rights reserved</span>
+      <a href="mailto:info@zosa-agentic.ai">info@zosa-agentic.ai</a>
+    </div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     CONTACT
+     ============================================================ -->
+<section class="page doc" id="page-contact">
+
+  <div class="doc-inner">
+    <div class="d-hero">
+      <p class="d-eyebrow reveal">Contact</p>
+      <h1 class="d-h1 reveal rv-blur" style="--rd:60ms">
+        Let&rsquo;s build<br><span class="grad">something real</span>
+      </h1>
+      <p class="d-lead reveal" style="--rd:140ms">
+        Have a product in mind, or an AI system that has to hold up in a regulated
+        environment? Whether you are going from zero to one or scaling something that
+        already ships, we are here to scope it, build it and take it to production
+        with you.
+      </p>
+    </div>
+
+    <div class="d-two">
+      <!-- ==========================================================
+           Submits through FormSubmit.co, the same relay the Amplera site
+           uses: no account, no API key — the destination is just the address
+           in CONTACT_EMAIL at the top of the script block below.
+           ========================================================== -->
+      <form class="d-form reveal rv-left" id="contactForm">
+        <!-- honeypot: bots fill it, people never see it -->
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off"
+               style="display:none" aria-hidden="true">
+
+        <div class="pair">
+          <label class="d-field"><span>First name</span>
+            <input type="text" name="first" autocomplete="given-name" required>
+          </label>
+          <label class="d-field"><span>Last name</span>
+            <input type="text" name="last" autocomplete="family-name" required>
+          </label>
+        </div>
+
+        <label class="d-field"><span>Email</span>
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+
+        <label class="d-field"><span>Subject</span>
+          <select name="subject">
+            <option>Build a product &mdash; scope, architecture and delivery</option>
+            <option>Partner with us &mdash; healthcare and life-sciences AI</option>
+            <option>Clinical AI &mdash; Zosa Scribe pilots and deployments</option>
+            <option>Security &amp; compliance review</option>
+            <option>Careers &mdash; join the engineering team</option>
+            <option>Media &amp; speaking</option>
+          </select>
+        </label>
+
+        <label class="d-field"><span>Message</span>
+          <textarea name="message" placeholder="A few lines on the problem, the users and the timeline." required></textarea>
+        </label>
+
+        <label class="d-check">
+          <input type="checkbox" name="terms" required>
+          <span>I agree that Zosa Agentic may contact me about this enquiry.</span>
+        </label>
+
+        <button class="d-btn" type="submit" id="formSend">Send message</button>
+        <p class="d-status" id="formStatus" role="status" aria-live="polite" hidden></p>
+        <p class="d-note" id="formNote">
+          Goes straight to info@zosa-agentic.ai. We reply to every message.
+        </p>
+      </form>
+
+      <div class="d-side">
+        <div class="d-panel reveal rv-right" style="--rd:80ms">
+          <h3>Have a project in mind?</h3>
+          <a class="d-mail" href="mailto:info@zosa-agentic.ai">info@zosa-agentic.ai</a>
+          <p>General enquiries, partnerships, press and speaking.</p>
+        </div>
+
+        <div class="d-panel reveal rv-right" style="--rd:150ms">
+          <h3>What we build</h3>
+          <ul class="d-list">
+            <li>Production AI/ML and agentic systems</li>
+            <li>Backends, APIs and native mobile apps</li>
+            <li>Cloud, LLMOps and cost control</li>
+            <li>HIPAA / FHIR / DPDP / SOC 2 readiness</li>
+          </ul>
+        </div>
+
+        <div class="d-panel reveal rv-right" style="--rd:220ms">
+          <h3>Products</h3>
+          <ul class="d-list">
+            <li><a href="#supper">Supper</a> &mdash; consumer fintech &middot; telco</li>
+            <li><a href="#graceabides">GraceAbides</a> &mdash; matrimony platform</li>
+            <li><a href="#scribe">Zosa Scribe</a> &mdash; clinical AI</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="sitefoot">
+    <div class="sitefoot-inner">
+      <div>
+        <div class="fbrand">ZOSA <span>AGENTIC</span></div>
+        <p class="fabout">
+          A team of high-caliber software engineers pairing production-grade AI/ML with
+          deep healthcare and life-sciences domain expertise &mdash; shipping real
+          products, end to end.
+        </p>
+      </div>
+
+      <div>
+        <h4>Sitemap</h4>
+        <ul>
+          <li><a href="#supper">Supper</a></li>
+          <li><a href="#graceabides">GraceAbides</a></li>
+          <li><a href="#scribe">Zosa Scribe</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a class="fmail" href="mailto:info@zosa-agentic.ai">info@zosa-agentic.ai</a></li>
+          <li><a href="https://zosa-agentic.ai">zosa-agentic.ai</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sitefoot-bottom">
+      <span>2026 Zosa Agentic &copy; All rights reserved</span>
+      <a href="mailto:info@zosa-agentic.ai">info@zosa-agentic.ai</a>
+    </div>
+  </footer>
+</section>
+
+</main>
+
+<script>
+/* ---------- product menu routing (hash based) ---------- */
+(function(){
+  var fitAfterShow = null;
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('#menu button'));
+  var pages   = Array.prototype.slice.call(document.querySelectorAll('.page'));
+  /* section ids are prefixed "page-" so the hash never triggers the browser's
+     own anchor jump — routing is handled here instead */
+  var ids     = pages.map(function(p){ return p.id.replace(/^page-/,''); });
+
+  /* the warp-in runs on .is-entering, not .is-active, so that once it has
+     finished the cards fall back to their idle orbital drift */
+  var ENTER_MS = 900;
+  var enterTimer = null;
+  function playEntrance(page){
+    if (!page) return;
+    if (enterTimer) clearTimeout(enterTimer);
+    pages.forEach(function(p){ p.classList.remove('is-entering'); });
+    void page.offsetWidth;                     /* restart the animation */
+    page.classList.add('is-entering');
+    enterTimer = setTimeout(function(){
+      page.classList.remove('is-entering');
+      enterTimer = null;
+    }, ENTER_MS);
+  }
+
+  function apply(id, quiet){
+    pages.forEach(function(p){ p.classList.toggle('is-active', p.id === 'page-' + id); });
+    buttons.forEach(function(b){
+      if (b.dataset.target === id) b.setAttribute('aria-current','page');
+      else b.removeAttribute('aria-current');
+    });
+    var activePage = document.getElementById('page-' + id);
+    /* About / Contact scroll like a normal page (and carry the site footer);
+       the product pages stay inside the fit-to-screen frame */
+    document.body.classList.toggle('doc', !!(activePage && activePage.classList.contains('doc')));
+    if (location.hash.slice(1) !== id) history.replaceState(null,'','#'+id);
+    window.scrollTo({top:0, behavior: quiet ? 'auto' : 'smooth'});
+    /* geometry first, then the entrance — the cards' --rad / --ang have to be
+       settled before the warp-in reads them */
+    if (fitAfterShow) fitAfterShow();
+    playEntrance(activePage);
+    window.dispatchEvent(new CustomEvent('zosa:page', {detail: activePage}));
+  }
+
+  /* ---------- rotate-and-blur transition between tabs ---------- */
+  var switching = false;
+  var EXIT_MS   = 700;   /* matches the warp-out */
+  var TEXT_MS   = 340;   /* About / Contact have no circle — only the head fades */
+
+  function show(id, quiet){
+    if (ids.indexOf(id) === -1) id = ids[0];
+    var active  = document.querySelector('.page.is-active');
+    var already = active && active.id === 'page-' + id;
+    if (quiet || already || !active){ apply(id, quiet); return; }
+    if (switching) return;
+    switching = true;
+
+    /* spin direction follows the menu order: right → clockwise, left → counter */
+    var from = ids.indexOf(active.id.replace(/^page-/,''));
+    var to   = ids.indexOf(id);
+    var dir  = to > from ? 1 : -1;
+    document.documentElement.style.setProperty('--dir', dir);
+
+    active.classList.remove('is-entering');
+    active.classList.add('is-leaving');
+    setTimeout(function(){
+      active.classList.remove('is-leaving');
+      apply(id, quiet);
+      switching = false;
+    }, active.querySelector('.stage') ? EXIT_MS : TEXT_MS);
+  }
+
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){ show(b.dataset.target); });
+  });
+
+  /* ---------- fit the circle to the free space at 100% zoom ---------- */
+  /* The circle keeps its design at every size — it simply scales down (text and
+     mockup included) until it fits. Only true phone widths unroll into a list. */
+  /* below this width the two card columns leave the circle no room, so the
+     page unrolls into the single-column list instead */
+  var PHONE = 900;
+
+  /* Every product page must lay out identically — the circle and the arc can't
+     jump about as you move between tabs. The cards differ in height from
+     product to product (a stat card is taller than a row of chips), so the
+     geometry is measured across ALL of them, not just the one on screen.
+     Hidden pages are measured by lifting them out of flow for the read, which
+     costs nothing visually: there is no paint inside a single frame. */
+  var stagePages = pages.filter(function(pg){ return pg.querySelector('.stage'); });
+
+  /* tallest card in each of the six slots, across every product */
+  function measureSlots(w, h){
+    var slot = [0,0,0,0,0,0];
+    stagePages.forEach(function(pg){
+      var hidden = !pg.classList.contains('is-active');
+      /* the page's own inline style carries its --accent, so keep it and put
+         it back verbatim rather than clobbering it */
+      var keep = hidden ? pg.getAttribute('style') : null;
+      if (hidden){
+        pg.style.cssText = (keep ? keep + '; ' : '') +
+                           'display:flex; flex-direction:column; visibility:hidden; ' +
+                           'position:absolute; left:0; top:0; ' +
+                           'width:' + w + 'px; height:' + h + 'px';
+      }
+      var cards = pg.querySelectorAll('.node');
+      for (var i = 0; i < cards.length && i < 6; i++){
+        slot[i] = Math.max(slot[i], cards[i].offsetHeight);
+      }
+      if (hidden){
+        if (keep === null) pg.removeAttribute('style');
+        else pg.setAttribute('style', keep);
+      }
+    });
+    return slot;
+  }
+
+  function fit(){
+    /* the phone check runs first so About / Contact (no .stage-wrap) still
+       switch the body between the fitted and the unrolled layout */
+    if (window.innerWidth < PHONE){
+      document.body.classList.add('flow');
+      document.documentElement.style.removeProperty('--stage');
+      return;
+    }
+    document.body.classList.remove('flow');
+    var wrap = document.querySelector('.page.is-active .stage-wrap');
+    if (!wrap) return;
+
+    var wrapW = wrap.clientWidth, wrapH = wrap.clientHeight;
+    var root = document.documentElement.style;
+    var mainEl = document.querySelector('main');
+    var mainW = mainEl.clientWidth, mainH = mainEl.clientHeight;
+
+    var cardW = Math.max(200, Math.floor(Math.min(360, wrapW * 0.19)));
+    root.setProperty('--cardw', cardW + 'px');
+
+    /* Three cards stack down each side. Rather than pin them to fixed
+       fractions of the height — which wastes room whenever the cards are
+       uneven — pack each column by its real heights with equal gaps, and
+       solve --fs (the card font size everything inside is an em of) until
+       those gaps are comfortable. Two passes converge: height is very nearly
+       linear in font size. */
+    var EDGE = 8, GAP_MIN = 20;
+    var avail = wrapH - 2 * EDGE;
+    var fs = 1, slot, colTop, gap;
+
+    function pack(){
+      slot = measureSlots(mainW, mainH);
+      colTop = Math.max(slot[0] + slot[1] + slot[2], slot[3] + slot[4] + slot[5]);
+      gap = (avail - colTop) / 2;
+      return gap;
+    }
+
+    for (var pass = 0; pass < 2; pass++){
+      root.setProperty('--fs', fs.toFixed(3));
+      if (pack() >= GAP_MIN) break;
+      var want = avail - 2 * GAP_MIN;
+      fs = Math.max(0.7, fs * (want > 0 ? want / colTop : 1));
+    }
+    root.setProperty('--fs', fs.toFixed(3));
+    pack();
+
+    /* even at the smallest card size they cannot sit clear here — unroll into
+       the list rather than serve something overlapping */
+    if (gap < 6){
+      document.body.classList.add('flow');
+      document.documentElement.style.removeProperty('--stage');
+      return;
+    }
+
+    /* the row each slot occupies, centred as a column in the free height */
+    var yOf = [], cursor, k;
+    [[0,1,2],[3,4,5]].forEach(function(col){
+      cursor = -avail / 2;
+      col.forEach(function(idx){
+        yOf[idx] = cursor + slot[idx] / 2;
+        cursor += slot[idx] + gap;
+      });
+    });
+
+    /* horizontal reach keeps the arc: top and bottom inboard, middle furthest out */
+    var reachX = Math.max(120, wrapW / 2 - cardW / 2 - 10);
+
+    /* Place every product's cards, not just the visible one, so a page's six
+       are already on their arc before its warp-in starts. */
+    var nearest = Infinity, all = [];
+    stagePages.forEach(function(pg){
+      var cards = pg.querySelectorAll('.node');
+      for (var i = 0; i < cards.length && i < 6; i++){
+        var el = cards[i];
+        var tx = (parseFloat(el.getAttribute('data-fx')) || 0) * reachX;
+        var ty = yOf[i];
+        var rad = Math.sqrt(tx * tx + ty * ty);
+        el.style.setProperty('--rad', Math.round(rad) + 'px');
+        el.style.setProperty('--ang', (Math.atan2(ty, tx) * 180 / Math.PI).toFixed(2) + 'deg');
+        nearest = Math.min(nearest, rad);
+        all.push({el: el, rad: rad});
+      }
+    });
+
+    /* the idle float gets a third of the gap at most, and never more than
+       1.4 degrees, so it can never close the space between two cards */
+    var budget = gap / 3;
+    all.forEach(function(g){
+      var deg = g.rad > 0 ? Math.min(1.4, budget / g.rad * 180 / Math.PI) : 0;
+      g.el.style.setProperty('--sway', deg.toFixed(2) + 'deg');
+    });
+
+    var clear = 2 * (nearest - cardW / 2 - 12);       /* circle must stay inside the cards */
+    root.setProperty('--stage', Math.max(260, Math.floor(Math.min(1400, wrapH, clear))) + 'px');
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', fit);
+  fitAfterShow = fit;
+  requestAnimationFrame(fit);
+  window.addEventListener('hashchange', function(){ show(location.hash.slice(1)); });
+  show(location.hash.slice(1) || ids[0], true);
+})();
+
+/* ---------- reveal on scroll (About / Contact) ----------
+   Elements marked .reveal fade up once they enter the viewport, and re-arm
+   whenever you switch back to the page so the entrance plays every time. */
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var items  = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+  if (!items.length) return;
+  if (reduce || !('IntersectionObserver' in window)){
+    items.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('in'); });
+  }, {rootMargin:'0px 0px -8% 0px', threshold:.05});
+  items.forEach(function(el){ io.observe(el); });
+
+  /* re-arm on tab switch: the page was display:none, so nothing was observed */
+  window.addEventListener('zosa:page', function(ev){
+    var page = ev.detail;
+    if (!page || !page.classList.contains('doc')) return;
+    Array.prototype.slice.call(page.querySelectorAll('.reveal')).forEach(function(el){
+      el.classList.remove('in');
+      io.unobserve(el); io.observe(el);
+    });
+  });
+})();
+
+/* ---------- logo: hand the mark over to hover once the load spin ends ---------- */
+(function(){
+  var mark = document.querySelector('.brand .mark img');
+  if (!mark) return;
+  mark.addEventListener('animationend', function(){ mark.classList.add('spun'); }, {once:true});
+  /* if the animation never ran (reduced motion), enable hover straight away */
+  setTimeout(function(){ mark.classList.add('spun'); }, 1600);
+})();
+
+/* ---------- scroll progress bar (doc pages) ---------- */
+(function(){
+  var bar = document.querySelector('.scroll-progress');
+  if (!bar) return;
+  var queued = false;
+  function paint(){
+    queued = false;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var pos = max > 0 ? Math.min(1, Math.max(0, window.pageYOffset / max)) : 0;
+    bar.style.transform = 'scaleX(' + pos + ')';
+  }
+  function onScroll(){ if (!queued){ queued = true; requestAnimationFrame(paint); } }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  window.addEventListener('zosa:page', onScroll);
+  paint();
+})();
+
+/* ---------- contact form ----------
+   Submits through FormSubmit.co — the same relay the Amplera site uses. There
+   is no account and no API key: the destination is simply CONTACT_EMAIL, and
+   the enquiry is POSTed as JSON so the visitor never leaves the page.
+
+   ONE-TIME STEP: the first submission after this goes live triggers an
+   "Activate Form" confirmation email from FormSubmit to CONTACT_EMAIL.
+   Someone has to click that link once; every submission after it lands
+   straight in the inbox.
+
+   Opened from a file:// path or localhost it does not attempt the request —
+   it confirms the form is valid and says it will send once deployed. */
+(function(){
+  var CONTACT_EMAIL = 'info@zosa-agentic.ai';
+
+  var form = document.getElementById('contactForm');
+  if (!form) return;
+  var btn    = document.getElementById('formSend');
+  var status = document.getElementById('formStatus');
+  var note   = document.getElementById('formNote');
+
+  function fail(t){ if (status){ status.className = 'd-status bad'; status.textContent = t; status.hidden = false; } }
+  function ok(t){   if (status){ status.className = 'd-status ok';  status.textContent = t; status.hidden = false; } }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var d = new FormData(form);
+    var name = ((d.get('first') || '') + ' ' + (d.get('last') || '')).trim();
+    var email = (d.get('email') || '').trim();
+
+    if (!name){ return fail('Please add your name.'); }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ return fail('Please enter a valid email address.'); }
+    if (!(d.get('message') || '').trim()){ return fail('Please add a line or two about what you need.'); }
+    if (!d.get('terms')){ return fail('Please give consent so we can reply.'); }
+
+    /* nothing to send from a local file — confirm and stop */
+    var local = ['localhost', '127.0.0.1', ''].indexOf(location.hostname) > -1 ||
+                location.protocol === 'file:';
+    if (local){
+      return ok('Looks good — this will send for real once the site is deployed ' +
+                'and the inbox is connected.');
+    }
+
+    if (btn){ btn.disabled = true; }
+    ok('Sending…');
+
+    fetch('https://formsubmit.co/ajax/' + CONTACT_EMAIL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify({
+        _subject:  'Zosa Agentic enquiry — ' + (d.get('subject') || ''),
+        _template: 'table',
+        _captcha:  'false',
+        _replyto:  email,
+        Name:      name,
+        Email:     email,
+        Enquiry:   d.get('subject') || '',
+        Message:   d.get('message') || '',
+        Consent:   'yes'
+      })
+    })
+    .then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      form.reset();
+      if (note) note.hidden = true;
+      ok('Thank you — your message is on its way. We reply to every one.');
+    })
+    .catch(function(){
+      fail('Something went wrong. Please email ' + CONTACT_EMAIL + ' instead.');
+    })
+    .finally(function(){ if (btn) btn.disabled = false; });
+  });
+})();
+</script>
+</body>
+</html>
