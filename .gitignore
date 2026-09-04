@@ -1,0 +1,22 @@
+# This repo is served by GitHub Pages from the root, so anything committed here
+# is published on zosa-agentic.ai. Keep working files out of it.
+
+# local agent settings — machine specific
+.claude/
+
+# deploy artefacts: the repo root IS the site, so these are duplicates
+zosa-agentic-site/
+zosa-agentic-site.zip
+
+# working files, not part of the site
+motion-demo.html
+
+# logo source art — the site only needs Zosa-Agentic-Logo-transparent.png
+Zosa-Agentic-Logo.png
+Zosa Agentic Minimalist v2.png
+
+# OS / editor junk
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
