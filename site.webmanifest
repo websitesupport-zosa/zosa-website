@@ -1,0 +1,15 @@
+{
+  "name": "Zosa Agentic",
+  "short_name": "Zosa",
+  "description": "AI engineering built for healthcare and life sciences.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f6fb",
+  "theme_color": "#f6f6fb",
+  "icons": [
+    { "src": "favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "favicon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "favicon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
