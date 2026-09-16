@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Zosa Scribe — AI medical scribe, SOAP notes in ~5 seconds | Zosa Agentic</title>
+<meta name="description" content="Zosa Scribe is a proprietary Zosa product: an AI medical scribe that listens to the doctor–patient consultation and returns a structured SOAP note in about five seconds, across 11 languages. CERT-In audit cleared, DPDP aligned, HIPAA and FHIR ready." />
+<link rel="canonical" href="https://zosa-agentic.ai/scribe/" />
+<meta name="theme-color" content="#f6f6fb" />
+
+<link rel="icon" href="../favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="manifest" href="../site.webmanifest" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Zosa Agentic" />
+<meta property="og:url" content="https://zosa-agentic.ai/scribe/" />
+<meta property="og:title" content="Zosa Scribe — AI medical scribe, SOAP notes in ~5 seconds | Zosa Agentic" />
+<meta property="og:description" content="Zosa Scribe is a proprietary Zosa product: an AI medical scribe that listens to the doctor–patient consultation and returns a structured SOAP note in about five seconds, across 11 languages. CERT-In audit cleared, DPDP aligned, HIPAA and FHIR ready." />
+<meta property="og:image" content="https://zosa-agentic.ai/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Zosa Agentic — AI agentic services for global clients" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Zosa Scribe — AI medical scribe, SOAP notes in ~5 seconds | Zosa Agentic" />
+<meta name="twitter:description" content="Zosa Scribe is a proprietary Zosa product: an AI medical scribe that listens to the doctor–patient consultation and returns a structured SOAP note in about five seconds, across 11 languages. CERT-In audit cleared, DPDP aligned, HIPAA and FHIR ready." />
+<meta name="twitter:image" content="https://zosa-agentic.ai/og-image.png" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://zosa-agentic.ai/#organization",
+      "name": "Zosa Agentic",
+      "url": "https://zosa-agentic.ai/",
+      "logo": {"@type": "ImageObject", "url": "https://zosa-agentic.ai/favicon-512.png", "width": 512, "height": 512},
+      "image": "https://zosa-agentic.ai/og-image.png",
+      "email": "info@zosa-agentic.ai",
+      "description": "An AI agentic services company. We develop products and projects for global clients, and build proprietary products of our own.",
+      "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "email": "info@zosa-agentic.ai", "availableLanguage": ["English"]}
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Zosa Scribe",
+      "url": "https://zosa-agentic.ai/scribe/",
+      "applicationCategory": "HealthApplication",
+      "description": "Zosa Scribe is a proprietary Zosa product: an AI medical scribe that listens to the doctor–patient consultation and returns a structured SOAP note in about five seconds, across 11 languages. CERT-In audit cleared, DPDP aligned, HIPAA and FHIR ready.",
+      "publisher": {"@id": "https://zosa-agentic.ai/#organization"}
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Zosa Agentic", "item": "https://zosa-agentic.ai/"},
+        {"@type": "ListItem", "position": 2, "name": "Zosa Scribe", "item": "https://zosa-agentic.ai/scribe/"}
+      ]
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css?v=20260916p">
+</head>
+<body>
+
+<div class="scroll-progress" aria-hidden="true"></div>
+
+<!-- =================== TOP BAR =================== -->
+<header class="topbar">
+  <a class="brand" href="/">
+    <span class="mark">
+      <img src="../Zosa-Agentic-Logo-transparent.png" alt="Zosa Agentic logo">
+    </span>
+    <span class="wm">ZOSA <span>AGENTIC</span></span>
+  </a>
+
+  <button class="navtoggle" id="navToggle" type="button"
+          aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+    <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>
+
+  <nav class="menu" id="menu" aria-label="Main">
+    <a href="/" data-nav="home" style="--pill:#7b7b9c"><span class="dot"></span>Home</a>
+    <a href="/supper/" data-nav="supper" style="--pill:#d97a12"><span class="dot"></span>Supper</a>
+    <a href="/graceabides/" data-nav="graceabides" style="--pill:#6d5ef0"><span class="dot"></span>GraceAbides</a>
+    <a href="/scribe/" data-nav="scribe" style="--pill:#0d9488" aria-current="page"><span class="dot"></span>Zosa Scribe</a>
+    <span class="sep" aria-hidden="true"></span>
+    <a href="/contact/" data-nav="contact" style="--pill:#7b7b9c"><span class="dot"></span>Contact</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="page" id="page-scribe"
+         style="--accent:#0d9488; --accent-soft:rgba(13,148,136,.10)">
+
+  <div class="pagehead">
+    <p class="eyebrow">Clinical AI</p>
+    <h1>Zosa Scribe</h1>
+    <div class="domain">zosa-agentic.ai</div>
+  </div>
+
+  <div class="stage-wrap">
+  <div class="orbit">
+
+    <article class="node" data-fx="-.70" data-fy="-.95" style="--i:0; --dly:0ms">
+    <span class="num">01 — OVERVIEW</span>
+    <h2>What it is</h2>
+    <p>A <strong>proprietary Zosa product</strong> &mdash; an AI medical scribe that listens to the doctor–patient conversation and returns a structured SOAP note in about five seconds.</p>
+    </article>
+
+    <article class="node" data-fx="-1.0" data-fy="-.02" style="--i:1; --dly:40ms">
+    <span class="num">02 — KEY FEATURES</span>
+    <h2>In every note</h2>
+    <ul>
+    <li>Vitals and exam findings</li>
+    <li>Diagnosis and medications</li>
+    <li>Follow-up plan, already in place</li>
+    </ul>
+    </article>
+
+    <article class="node" data-fx="-.72" data-fy=".95" style="--i:2; --dly:80ms">
+    <span class="num">03 — LANGUAGES</span>
+    <h2>11 languages</h2>
+    <p>English, Hindi, Urdu, Telugu, Tamil, Spanish and Arabic among them — built for real multilingual consultations.</p>
+    </article>
+
+    <div class="stage">
+    <div class="ring"></div>
+    <div class="watermark">Scribe</div>
+    <svg class="spokes" viewBox="0 0 880 880" aria-hidden="true">
+      <circle cx="440" cy="440" r="305" fill="none" stroke="currentColor" stroke-opacity=".10"
+              stroke-dasharray="2 7" style="color:var(--accent)"/>
+    </svg>
+    <div class="hub">
+      <div class="hub-plate">
+        <svg viewBox="0 0 300 300" role="img" aria-label="Zosa Scribe: conversation waveform converted into a structured SOAP note">
+          <defs>
+            <linearGradient id="scrGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#0d9488"/><stop offset="1" stop-color="#2dd4bf"/>
+            </linearGradient>
+            <!-- userSpaceOnUse so it also works on zero-width vertical strokes -->
+            <linearGradient id="scrWave" gradientUnits="userSpaceOnUse" x1="92" y1="110" x2="208" y2="110">
+              <stop offset="0" stop-color="#0d9488"/><stop offset="1" stop-color="#2dd4bf"/>
+            </linearGradient>
+          </defs>
+          <!-- consult: doctor + patient -->
+          <g transform="translate(150,52)" font-family="Manrope,sans-serif">
+            <g transform="translate(-46,0)">
+              <circle r="15" fill="#e6f7f5"/><circle cy="-4" r="5.2" fill="#0d9488" opacity=".65"/>
+              <path d="M-8 6a8 8 0 0 1 16 0z" fill="#0d9488" opacity=".65"/>
+              <text y="27" text-anchor="middle" font-size="7.4" fill="#3d3d5c">Doctor</text>
+            </g>
+            <g transform="translate(46,0)">
+              <circle r="15" fill="#e6f7f5"/><circle cy="-4" r="5.2" fill="#2dd4bf" opacity=".8"/>
+              <path d="M-8 6a8 8 0 0 1 16 0z" fill="#2dd4bf" opacity=".8"/>
+              <text y="27" text-anchor="middle" font-size="7.4" fill="#3d3d5c">Patient</text>
+            </g>
+            <path d="M-27 0h54" stroke="#0d9488" stroke-opacity=".3" stroke-width="1.6" stroke-dasharray="3 4"/>
+          </g>
+          <!-- waveform -->
+          <g transform="translate(150,110)" stroke="url(#scrWave)" stroke-width="3.4" stroke-linecap="round">
+            <g>
+              <line x1="-58" y1="-5" x2="-58" y2="5"/><line x1="-48" y1="-11" x2="-48" y2="11"/>
+              <line x1="-38" y1="-18" x2="-38" y2="18"/><line x1="-28" y1="-9" x2="-28" y2="9"/>
+              <line x1="-18" y1="-15" x2="-18" y2="15"/><line x1="-8" y1="-22" x2="-8" y2="22"/>
+              <line x1="2"  y1="-10" x2="2"  y2="10"/><line x1="12" y1="-17" x2="12" y2="17"/>
+              <line x1="22" y1="-7"  x2="22" y2="7"/><line x1="32" y1="-13" x2="32" y2="13"/>
+              <line x1="42" y1="-19" x2="42" y2="19"/><line x1="52" y1="-6"  x2="52" y2="6"/>
+            </g>
+          </g>
+          <!-- arrow + 5s badge -->
+          <g transform="translate(150,144)">
+            <path d="M0 -6v12" stroke="#0d9488" stroke-opacity=".4" stroke-width="1.6"/>
+            <path d="M-4 4l4 5 4-5" fill="none" stroke="#0d9488" stroke-opacity=".4" stroke-width="1.6" stroke-linecap="round"/>
+            <g transform="translate(30,-6)">
+              <rect width="52" height="17" rx="8.5" fill="#e6f7f5"/>
+              <text x="26" y="11.6" text-anchor="middle" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="7" fill="#0d9488">~5 SECONDS</text>
+            </g>
+          </g>
+          <!-- SOAP note card -->
+          <g transform="translate(66,164)">
+            <rect width="168" height="86" rx="12" fill="#fff" stroke="#e6e6f0"/>
+            <rect x="0" y="0" width="168" height="20" rx="12" fill="url(#scrGrad)"/>
+            <rect x="0" y="12" width="168" height="8" fill="url(#scrGrad)"/>
+            <text x="10" y="14" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="7.4" fill="#fff" letter-spacing="1">SOAP NOTE</text>
+            <g font-family="Manrope,sans-serif" font-size="7.4" fill="#12122b">
+              <text x="10" y="34" font-weight="700" fill="#0d9488">S</text><rect x="20" y="29" width="82" height="4.6" rx="2.3" fill="#12122b" opacity=".22"/>
+              <text x="10" y="46" font-weight="700" fill="#0d9488">O</text><rect x="20" y="41" width="128" height="4.6" rx="2.3" fill="#12122b" opacity=".22"/>
+              <text x="10" y="58" font-weight="700" fill="#0d9488">A</text><rect x="20" y="53" width="66" height="4.6" rx="2.3" fill="#12122b" opacity=".22"/>
+              <text x="10" y="70" font-weight="700" fill="#0d9488">P</text><rect x="20" y="65" width="104" height="4.6" rx="2.3" fill="#12122b" opacity=".22"/>
+            </g>
+            <g transform="translate(100,3.5)" font-family="IBM Plex Mono,ui-monospace,monospace" font-size="5.6" fill="#0d9488">
+              <rect width="58" height="13" rx="6.5" fill="#fff" fill-opacity=".92"/>
+              <text x="29" y="9" text-anchor="middle">11 LANGUAGES</text>
+            </g>
+          </g>
+          <text x="150" y="270" text-anchor="middle" font-family="IBM Plex Mono,ui-monospace,monospace"
+                font-size="7.4" letter-spacing="1.6" fill="#6e6e8f">CONVERSATION → SOAP NOTE</text>
+        </svg>
+      </div>
+    </div>
+    </div>
+
+    <article class="node" data-fx=".70" data-fy="-.95" style="--i:3; --dly:120ms">
+    <span class="num">04 — COMPLIANCE</span>
+    <h2>Cleared for clinical use</h2>
+    <div class="chips">
+    <span class="chip">CERT-IN AUDIT CLEARED</span>
+    <span class="chip">DPDP · INDIAN HEALTHCARE</span>
+    <span class="chip">HIPAA · FHIR READY</span>
+    </article>
+
+    <article class="node" data-fx="1.0" data-fy="-.02" style="--i:4; --dly:160ms">
+    <span class="num">05 — WHO IT'S FOR</span>
+    <h2>Audience</h2>
+    <p>Clinicians who would rather spend the consultation with the patient than with the keyboard — human-in-the-loop before anything is signed.</p>
+    </article>
+
+    <article class="node" data-fx=".72" data-fy=".95" style="--i:5; --dly:200ms">
+    <span class="num">06 — SPEED</span>
+    <h2>Turnaround</h2>
+    <div class="stat">~5 seconds</div>
+    <p>From end of conversation to a reviewable, structured note.</p>
+    </article>
+    </div>
+
+  </div>
+  </div>
+
+</section>
+
+</main>
+
+<script src="../app.js?v=20260916p"></script>
+</body>
+</html>

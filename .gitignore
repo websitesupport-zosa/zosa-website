@@ -20,3 +20,13 @@ Thumbs.db
 desktop.ini
 .DS_Store
 *.swp
+
+# source art and motion reference — the site ships intro-still.png only
+zosa-logo-steel-white-4k.png
+zosa-logo-butterflies.gif
+
+# impeccable working state — the repo root IS the site, keep it unpublished
+.impeccable/
+
+# internal positioning brief - the repo root is the published site
+PRODUCT.md

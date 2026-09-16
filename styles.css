@@ -1,0 +1,778 @@
+/* ============================================================
+   ZOSA AGENTIC — CIRCULAR PRODUCT TEMPLATE
+   One file. No dependencies.
+   To add a product: copy a <section class="page"> block,
+   give it a new id, set --accent, and edit the 6 .node cards.
+   ============================================================ */
+
+:root{
+  --ink:#0f0f24;
+  --ink-2:#4c4c6b;
+  --muted:#7b7b9c;
+  --line:#e7e7f1;
+  --bg:#f6f6fb;
+  --card:#ffffff;
+  --brand:#6d5ef0;
+  --accent:#6d5ef0;              /* overridden per product */
+  --accent-soft:rgba(109,94,240,.10);
+  /* one type system across the whole site */
+  --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+  --sans:"Manrope","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --radius:14px;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  /* fit-to-screen: one viewport tall, no page scroll */
+  height:100svh; overflow:hidden;
+  display:flex; flex-direction:column;
+  font-family:var(--sans);
+  color:var(--ink);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+/* fallback layout: narrow or very short windows unroll and scroll */
+body.flow{height:auto; min-height:100svh; overflow:auto; display:block}
+
+/* ---------- top bar / product menu ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; padding:16px 36px;
+  background:rgba(244,245,250,.86);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit}
+.brand .mark{
+  width:42px;height:42px;
+  display:grid;place-items:center;color:var(--ink);
+}
+.brand .mark img{width:100%;height:100%;display:block;object-fit:contain}
+/* the mark spins into place on load, then a hover spins it again */
+@keyframes markSpinIn{
+  0%  {transform:rotate(-330deg) scale(.3);  opacity:0}
+  55% {opacity:1}
+  100%{transform:rotate(0deg)    scale(1);   opacity:1}
+}
+@keyframes wordmarkIn{
+  from{opacity:0; transform:translateX(-12px)}
+  to  {opacity:1; transform:none}
+}
+.brand .mark img{animation:markSpinIn 1.25s cubic-bezier(.18,.78,.2,1) both}
+.brand .mark img.spun{animation:none; transition:transform 1s cubic-bezier(.3,.72,.2,1)}
+.brand:hover .mark img.spun{transform:rotate(360deg)}
+.brand .wm{animation:wordmarkIn .75s .4s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){
+  .brand .mark img, .brand .wm{animation:none !important}
+}
+.brand .wm{font-family:var(--display);font-weight:600;letter-spacing:.17em;font-size:16px}
+.brand .wm span{color:var(--muted);font-weight:500}
+
+.menu{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.menu a{
+  text-decoration:none;
+  font-family:var(--sans); font-size:15px; font-weight:600;
+  color:var(--ink-2); background:transparent;
+  border:1px solid transparent; border-radius:999px;
+  padding:10px 18px; cursor:pointer; transition:.18s ease;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.menu a .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.45}
+.menu a:hover{background:#fff;border-color:var(--line);color:var(--ink)}
+.menu a[aria-current="page"]{
+  background:#fff; border-color:var(--line); color:var(--ink);
+  box-shadow:0 1px 2px rgba(18,18,43,.06);
+}
+.menu a[aria-current="page"] .dot{opacity:1;background:var(--pill,#6d5ef0)}
+/* divider between the product tabs and the About / Contact tabs */
+.menu .sep{width:1px; height:18px; background:var(--line); margin:0 5px}
+
+/* ---------- hamburger (phones and small tablets) ----------
+   Five tabs will not sit on one line under ~940px, so below that the menu
+   collapses into a panel under the bar and this button opens it. */
+.navtoggle{display:none}
+@media (max-width:940px){
+  .topbar{padding:12px 16px; flex-wrap:nowrap; gap:12px}
+
+  .navtoggle{
+    display:inline-grid; place-items:center; flex:0 0 auto;
+    width:46px; height:46px; padding:0; cursor:pointer;
+    background:#fff; border:1px solid var(--line); border-radius:13px;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .navtoggle:hover{border-color:var(--brand)}
+  .navtoggle .bars{position:relative; display:block; width:20px; height:14px}
+  .navtoggle i{
+    position:absolute; left:0; right:0; height:2px; border-radius:2px;
+    background:var(--ink);
+    transition:transform .3s cubic-bezier(.2,.7,.2,1), opacity .2s ease;
+  }
+  .navtoggle i:nth-child(1){top:0}
+  .navtoggle i:nth-child(2){top:6px}
+  .navtoggle i:nth-child(3){top:12px}
+  /* morph into a cross while open */
+  .navtoggle[aria-expanded="true"] i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  .navtoggle[aria-expanded="true"] i:nth-child(2){opacity:0; transform:scaleX(.3)}
+  .navtoggle[aria-expanded="true"] i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+  /* the tab row becomes a drop panel hanging off the bar */
+  .menu{
+    position:absolute; top:100%; left:0; right:0; z-index:49;
+    flex-direction:column; align-items:stretch; gap:4px; flex-wrap:nowrap;
+    padding:10px 12px 14px;
+    background:rgba(246,246,251,.97);
+    backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--line);
+    box-shadow:0 28px 46px -30px rgba(18,18,43,.45);
+    opacity:0; visibility:hidden; transform:translateY(-12px);
+    transition:opacity .26s ease,
+               transform .3s cubic-bezier(.2,.7,.2,1),
+               visibility .26s;
+  }
+  body.nav-open .menu{opacity:1; visibility:visible; transform:none}
+
+  .menu a{
+    width:100%; justify-content:flex-start;
+    font-size:16px; padding:14px 16px; border-radius:12px;
+  }
+  .menu a[aria-current="page"]{background:#fff}
+  .menu .sep{width:auto; height:1px; margin:6px 6px}
+}
+@media (prefers-reduced-motion:reduce){
+  .navtoggle i, .menu{transition:none}
+}
+
+/* ---------- pages ---------- */
+main{flex:1 1 auto; min-height:0; display:flex; position:relative}
+/* header/footer breathe on tall screens, tighten on short ones so the circle keeps its room */
+.page{padding:clamp(12px,2.4vh,26px) 24px clamp(8px,1.6vh,18px); flex:1 1 auto; min-height:0}
+/* same glow language as About / Contact, with a wash of the product's own accent */
+.page:not(.doc){
+  background:
+    radial-gradient(900px 560px at 12% -12%, rgba(109,94,240,.15), transparent 62%),
+    radial-gradient(720px 500px at 88% -4%,  rgba(14,165,183,.11), transparent 60%),
+    radial-gradient(820px 540px at 50% 116%, var(--accent-soft), transparent 66%),
+    var(--bg);
+}
+.page{display:flex; flex-direction:column}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.pagehead{flex:0 0 auto; max-width:1180px; margin:0 auto; text-align:center; position:relative; z-index:6}
+.eyebrow{
+  font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 clamp(4px,.8vh,8px);
+}
+.pagehead h2{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(28px,5vh,54px); letter-spacing:-.032em; line-height:1.04}
+.pagehead .domain{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:clamp(4px,.8vh,8px)}
+
+/* ---------- circular stage ---------- */
+/* --stage is measured by JS from the free space; the calc() is the no-JS fallback.
+   --u is "one design pixel" — every size inside the circle is a multiple of it,
+   so the whole diagram scales as one piece. */
+.stage-wrap{flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center}
+/* .orbit is the circle's own box; the six cards hang in the air around it,
+   each one absolutely placed by its own --x / --y offset from the centre.
+   Because every card's home is expressed as a translation away from that
+   centre, the churn animation only has to drive it back to translate(0,0)
+   for the card to be swallowed by the circle. */
+.orbit{
+  position:relative; flex:0 0 auto;
+  width:var(--stage, 700px); height:var(--stage, 700px);
+}
+.stage{
+  position:relative; flex:0 0 auto;
+  width:var(--stage, min(1400px, 100%, calc(100svh - 210px)));
+  height:var(--stage, min(1400px, 100%, calc(100svh - 210px)));
+  container-type:size;
+  /* smaller divisor = everything inside is larger; the px floor keeps
+     text readable when a short window squeezes the circle down */
+  --u:max(calc(1cqmin / 8.1), 0.78px);
+}
+
+/* the light watermark circle */
+.ring{
+  position:absolute; inset:0; border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 42%, #fff 0%, rgba(255,255,255,.35) 42%, transparent 68%),
+    radial-gradient(circle at 50% 50%, var(--accent-soft) 0%, var(--accent-soft) 58%, rgba(255,255,255,0) 74%);
+  border:1px solid rgba(18,18,43,.06);
+  box-shadow:inset 0 0 90px rgba(255,255,255,.9);
+}
+.ring::after{
+  content:""; position:absolute; inset:9%; border-radius:50%;
+  border:1px dashed rgba(18,18,43,.10);
+}
+.watermark{
+  position:absolute; inset:0; display:grid; place-items:center;
+  font-family:var(--display); font-weight:700; letter-spacing:.16em;
+  font-size:calc(74 * var(--u)); color:var(--accent); opacity:.07;
+  pointer-events:none; user-select:none; text-transform:uppercase;
+  clip-path:circle(50% at 50% 50%);       /* keeps the wordmark inside the circle */
+  overflow:hidden; white-space:nowrap;
+}
+.spokes{position:absolute; inset:0; pointer-events:none}
+
+/* centre product visual */
+.hub{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:calc(470 * var(--u)); height:calc(470 * var(--u));
+  display:grid; place-items:center; z-index:3;
+}
+.hub-plate{
+  width:100%; height:100%; border-radius:50%;
+  background:#fff; border:1px solid var(--line);
+  box-shadow:0 26px 60px -28px rgba(18,18,43,.30), 0 2px 0 rgba(255,255,255,.8) inset;
+  display:grid; place-items:center; padding:calc(11 * var(--u));
+}
+.hub-plate svg{width:100%;height:100%;display:block}
+
+/* the six cards, hanging in the air around the circle.
+   JS measures the free space and publishes --cardw plus each card's polar
+   --rad / --ang, so the six sit square to the page on an arc around the circle.
+   Its home is a point on that arc; the churn decays the orbit to zero. */
+.node{
+  position:absolute; left:50%; top:50%; z-index:4;
+  width:var(--cardw, 300px);
+  /* Everything inside the card is sized in em off this one font-size, and JS
+     sets --fs so three cards always sit clear of each other on a short
+     screen instead of crowding or overlapping. */
+  font-size:calc(clamp(12.4px,1.72vh,16.2px) * var(--fs,1));
+  /* Polar placement: swing out to --ang, ride out to --rad, then unwind the
+     same angle so the card sits square to the page. Written this way the
+     warp only has to sweep --ang and shrink --rad for the card to be drawn
+     into the middle of the circle. */
+  transform:translate(-50%,-50%)
+            rotate(var(--ang,0deg)) translateX(var(--rad,0px))
+            rotate(calc(var(--ang,0deg) * -1));
+  background:rgba(255,255,255,.9);
+  border:1px solid var(--line); border-radius:1.2em;
+  padding:1.05em 1.15em 1.1em;
+  box-shadow:0 22px 46px -30px rgba(18,18,43,.5);
+  backdrop-filter:blur(7px);
+  transition:box-shadow .3s ease, border-color .3s ease, background .3s ease;
+}
+.node:hover{
+  background:#fff; border-color:var(--accent);
+  box-shadow:0 32px 60px -28px rgba(18,18,43,.45);
+  z-index:5;
+}
+.node .num{
+  font-family:var(--mono); font-size:.72em; letter-spacing:.14em;
+  color:var(--accent); display:block; margin-bottom:.45em;
+}
+.node h2{
+  margin:0 0 .46em; font-family:var(--display); font-weight:600;
+  font-size:1.3em; letter-spacing:-.024em; line-height:1.2;
+}
+.node p{margin:0; font-size:1em; line-height:1.5; color:var(--ink-2)}
+.node ul{margin:0; padding-left:1.05em}
+.node li{font-size:1em; line-height:1.5; color:var(--ink-2); margin-bottom:.2em}
+.node li::marker{color:var(--accent)}
+.node .chips{display:flex; flex-wrap:wrap; gap:.42em; margin-top:.45em}
+.chip{
+  font-family:var(--mono); font-size:.68em; letter-spacing:.06em;
+  background:var(--accent-soft); color:var(--accent);
+  border-radius:999px; padding:.34em .66em; white-space:nowrap;
+}
+.node .stat{
+  font-family:var(--display); font-size:2.05em; font-weight:600;
+  letter-spacing:-.03em; line-height:1.12;
+}
+
+/* ============================================================
+   ABOUT / CONTACT  —  "doc" pages
+   Light editorial layout on the shared type system, with its own
+   palette variables so the product circles stay independent.
+   JS puts .doc on <body> while one of these is active, which releases
+   the fit-to-screen frame so the page scrolls and the footer is reachable.
+   ============================================================ */
+body.doc{height:auto; min-height:100svh; overflow:auto; display:block; background:var(--bg)}
+body.doc main{display:block}
+body.doc .page{padding:0; min-height:0}
+body.doc .page{display:block}
+body.doc.flow .page{padding:0}
+
+.page.doc{
+  --dsp:var(--display);
+  --dsans:var(--sans);
+  --dmono:var(--mono);
+  --d-ink:#0f0f24;
+  --d-ink-2:#4c4c6b;
+  --d-ink-3:#7b7b9c;
+  --d-line:rgba(18,18,43,.10);
+  --d-glass:rgba(255,255,255,.74);
+  --d-violet:#6d5ef0;
+  --d-cyan:#0ea5b7;
+
+  font-family:var(--dsans); color:var(--d-ink);
+  background:
+    radial-gradient(1000px 620px at 12% -14%, rgba(109,94,240,.16), transparent 62%),
+    radial-gradient(760px 520px at 88% -6%,  rgba(14,165,183,.11), transparent 60%),
+    var(--bg);
+}
+
+/* ---------- shell ---------- */
+.doc-inner{max-width:1180px; margin:0 auto; padding:clamp(44px,8vh,104px) 28px clamp(36px,6vh,76px)}
+.d-hero{max-width:960px}
+.d-eyebrow{
+  display:inline-flex; align-items:center; gap:9px; margin:0;
+  font-family:var(--dmono); font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:#5b4bd6; background:rgba(109,94,240,.10);
+  border:1px solid rgba(109,94,240,.26); border-radius:999px; padding:7px 15px;
+}
+.d-eyebrow::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--d-violet); box-shadow:0 0 10px rgba(109,94,240,.7)}
+.d-h1{
+  font-family:var(--dsp); font-weight:600; margin:24px 0 0;
+  font-size:clamp(40px,6.6vw,88px); line-height:.97; letter-spacing:-.038em;
+}
+.d-h1 .grad{
+  background:linear-gradient(102deg,#0f0f24 4%,#5b4bd6 54%,#0ea5b7 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.d-sub{
+  font-family:var(--dsp); font-weight:500; margin:20px 0 0;
+  font-size:clamp(17px,2vw,27px); letter-spacing:-.015em; color:var(--d-ink-2);
+}
+.d-lead{margin:22px 0 0; max-width:740px; font-size:clamp(15px,1.3vw,18.5px); line-height:1.68; color:var(--d-ink-2)}
+.d-lead strong{color:var(--d-ink); font-weight:700}
+
+/* ---------- stat tiles ---------- */
+.d-stats{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(196px,1fr)); margin-top:clamp(34px,5vh,58px)}
+.d-stat{
+  background:#fff; border:1px solid var(--d-line); border-radius:20px; padding:22px 22px 20px;
+  box-shadow:0 18px 40px -34px rgba(18,18,43,.45);
+}
+.d-stat b{display:block; font-family:var(--dsp); font-weight:600; font-size:clamp(21px,2.4vw,30px); letter-spacing:-.025em}
+.d-stat span{display:block; margin-top:9px; font-family:var(--dmono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--d-ink-3)}
+
+/* ---------- section heads ---------- */
+.d-sec{display:flex; align-items:baseline; gap:16px; margin:clamp(46px,8vh,92px) 0 clamp(20px,3vh,32px)}
+.d-sec h2{font-family:var(--dsp); font-weight:600; margin:0; font-size:clamp(25px,3.3vw,42px); letter-spacing:-.032em}
+
+/* ---------- capability cards ---------- */
+.d-grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.d-card{
+  position:relative; overflow:hidden; isolation:isolate;
+  background:var(--d-glass); border:1px solid var(--d-line); border-radius:22px;
+  padding:26px 26px 28px; backdrop-filter:blur(6px);
+  box-shadow:0 20px 44px -36px rgba(18,18,43,.5);
+  transition:transform .4s cubic-bezier(.2,.7,.2,1), border-color .4s ease,
+             background .4s ease, box-shadow .4s ease;
+}
+.d-card::before{
+  content:""; position:absolute; z-index:-1; width:230px; height:230px; top:-100px; left:-76px;
+  border-radius:50%; background:var(--c,#6d5ef0); opacity:.16; filter:blur(44px);
+  transition:opacity .4s ease;
+}
+.d-card:hover{
+  transform:translateY(-6px); background:#fff;
+  border-color:rgba(109,94,240,.32);
+  box-shadow:0 30px 60px -34px rgba(18,18,43,.42);
+}
+.d-card:hover::before{opacity:.3}
+.d-card .n{font-family:var(--dmono); font-size:10.5px; letter-spacing:.18em; color:var(--d-ink-3)}
+.d-card h3{font-family:var(--dsp); font-weight:600; margin:13px 0 11px; font-size:clamp(18px,1.7vw,22px); letter-spacing:-.022em; color:var(--c,var(--d-ink))}
+.d-card p{margin:0; font-size:15px; line-height:1.63; color:var(--d-ink-2)}
+.d-card p strong{color:var(--d-ink); font-weight:700}
+
+/* ---------- three-up strip ---------- */
+.d-row{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); margin-top:16px}
+.d-mini{display:flex; gap:14px; background:#fff; border:1px solid var(--d-line); border-radius:18px; padding:20px 22px}
+.d-mini .bead{flex:0 0 auto; width:9px; height:9px; border-radius:50%; margin-top:7px; background:var(--c,#6d5ef0); box-shadow:0 0 0 4px rgba(109,94,240,.12)}
+.d-mini h3{font-family:var(--dsp); font-weight:600; margin:0 0 6px; font-size:16px; letter-spacing:-.015em}
+.d-mini p{margin:0; font-size:14px; line-height:1.55; color:var(--d-ink-3)}
+
+/* ---------- closing call to action ---------- */
+.d-cta{
+  margin-top:clamp(46px,8vh,92px);
+  display:flex; align-items:center; justify-content:space-between; gap:26px; flex-wrap:wrap;
+  border:1px solid rgba(109,94,240,.22); border-radius:26px;
+  padding:clamp(26px,4vw,46px);
+  background:linear-gradient(118deg, rgba(109,94,240,.14), rgba(14,165,183,.08) 68%, #fff);
+}
+.d-cta h3{font-family:var(--dsp); font-weight:600; margin:0; font-size:clamp(22px,2.9vw,36px); letter-spacing:-.032em}
+.d-cta p{margin:11px 0 0; font-size:15px; color:var(--d-ink-2)}
+.d-btn{
+  display:inline-flex; align-items:center; gap:10px; cursor:pointer;
+  font-family:var(--dsans); font-weight:700; font-size:15.5px; letter-spacing:-.005em;
+  color:#fff; background:var(--d-ink); border:1px solid var(--d-ink); border-radius:999px;
+  padding:15px 26px; text-decoration:none;
+  transition:transform .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s ease, background .3s ease;
+}
+.d-btn:hover{transform:translateY(-2px); box-shadow:0 20px 40px -20px rgba(18,18,43,.55)}
+.d-btn.ghost{background:transparent; color:var(--d-ink); border-color:rgba(18,18,43,.2)}
+.d-btn.ghost:hover{background:#fff; box-shadow:0 16px 34px -24px rgba(18,18,43,.4)}
+
+/* ---------- contact ---------- */
+.d-two{display:grid; gap:18px; grid-template-columns:1.12fr .88fr; align-items:start; margin-top:clamp(30px,5vh,52px)}
+@media (max-width:900px){ .d-two{grid-template-columns:1fr} }
+
+.d-form{
+  background:#fff; border:1px solid var(--d-line); border-radius:24px;
+  padding:clamp(22px,3vw,34px); box-shadow:0 24px 50px -40px rgba(18,18,43,.5);
+}
+.d-form .pair{display:grid; gap:15px; grid-template-columns:1fr 1fr}
+@media (max-width:560px){ .d-form .pair{grid-template-columns:1fr} }
+.d-field{display:block; margin-bottom:15px}
+.d-field > span{
+  display:block; margin-bottom:8px;
+  font-family:var(--dmono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--d-ink-3);
+}
+.d-field input, .d-field select, .d-field textarea{
+  width:100%; font-family:var(--dsans); font-size:15.5px; color:var(--d-ink);
+  background:#fbfbfe; border:1px solid var(--d-line); border-radius:14px;
+  padding:14px 15px; transition:.22s ease;
+}
+.d-field textarea{min-height:132px; resize:vertical; line-height:1.55}
+.d-field input::placeholder, .d-field textarea::placeholder{color:#9c9cba}
+.d-field input:focus, .d-field select:focus, .d-field textarea:focus{
+  outline:none; border-color:var(--d-violet); background:#fff;
+  box-shadow:0 0 0 3px rgba(109,94,240,.18);
+}
+.d-check{display:flex; align-items:flex-start; gap:11px; font-size:14px; line-height:1.55; color:var(--d-ink-2)}
+.d-check input{width:17px; height:17px; margin-top:2px; accent-color:var(--d-violet)}
+.d-form .d-btn{width:100%; justify-content:center; margin-top:18px}
+.d-note{margin:13px 0 0; font-size:12.5px; line-height:1.55; color:var(--d-ink-3)}
+.d-status{
+  margin:14px 0 0; padding:12px 14px; border-radius:12px;
+  font-size:14px; line-height:1.5; border:1px solid transparent;
+}
+.d-status.ok{background:rgba(13,148,136,.09); border-color:rgba(13,148,136,.3); color:#0b6f66}
+.d-status.bad{background:rgba(224,92,92,.09); border-color:rgba(224,92,92,.32); color:#a5342f}
+.d-btn[disabled]{opacity:.6; cursor:progress; transform:none !important; box-shadow:none !important}
+
+.d-side{display:grid; gap:16px}
+.d-panel{
+  background:var(--d-glass); border:1px solid var(--d-line); border-radius:22px;
+  padding:clamp(20px,2.4vw,26px); backdrop-filter:blur(6px);
+  box-shadow:0 20px 44px -38px rgba(18,18,43,.5);
+}
+.d-panel h2{font-family:var(--dsp); font-weight:600; margin:0 0 12px; font-size:16.5px; letter-spacing:-.015em}
+.d-mail{
+  display:inline-block; font-family:var(--dsp); font-weight:600;
+  font-size:clamp(18px,1.9vw,24px); letter-spacing:-.025em; text-decoration:none;
+  background:linear-gradient(100deg,#0f0f24,#5b4bd6 58%,#0ea5b7);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.d-panel p{margin:12px 0 0; font-size:14px; line-height:1.6; color:var(--d-ink-2)}
+.d-list{margin:0; padding:0; list-style:none; display:grid; gap:11px}
+.d-list li{position:relative; padding-left:18px; font-size:14.5px; line-height:1.55; color:var(--d-ink-2)}
+.d-list li::before{content:""; position:absolute; left:0; top:8px; width:6px; height:6px; border-radius:50%; background:var(--d-violet)}
+.d-list a{color:var(--d-ink); font-weight:600; text-decoration:none; border-bottom:1px solid rgba(18,18,43,.22)}
+.d-list a:hover{border-bottom-color:var(--d-violet); color:#5b4bd6}
+
+/* ---------- scroll reveal ----------
+   Everything marked .reveal animates the first time it enters the viewport
+   and re-arms when you switch back to the page. Modifier classes pick the
+   direction: rv-scale, rv-blur, rv-left, rv-right. */
+@media (prefers-reduced-motion:no-preference){
+  .reveal{
+    opacity:0; transform:translateY(24px);
+    transition:opacity .85s cubic-bezier(.2,.7,.2,1),
+               transform .85s cubic-bezier(.2,.7,.2,1),
+               filter .85s ease;
+    transition-delay:var(--rd,0ms);
+    will-change:opacity, transform;
+  }
+  .reveal.rv-scale{transform:scale(.93)}
+  .reveal.rv-blur {transform:translateY(16px); filter:blur(12px)}
+  .reveal.rv-left {transform:translateX(-34px)}
+  .reveal.rv-right{transform:translateX(34px)}
+  .reveal.in{opacity:1; transform:none; filter:none}
+}
+/* the accent rule under a section title draws itself in */
+.d-sec h2{position:relative; padding-bottom:14px}
+.d-sec h2::after{
+  content:""; position:absolute; left:0; bottom:0; height:3px; width:0; border-radius:2px;
+  background:linear-gradient(90deg,var(--d-violet),var(--d-cyan));
+  transition:width 1s cubic-bezier(.2,.7,.2,1) .18s;
+}
+.d-sec.in h2::after{width:78px}
+
+/* scroll progress — only while a doc page is open */
+.scroll-progress{
+  position:fixed; top:0; left:0; z-index:60;
+  height:3px; width:100%; transform:scaleX(0); transform-origin:0 50%;
+  background:linear-gradient(90deg,#6d5ef0,#0ea5b7);
+  opacity:0; transition:opacity .35s ease; pointer-events:none;
+}
+body.doc .scroll-progress{opacity:1}
+
+/* ============================================================
+   SITE FOOTER — only the About and Contact pages carry one.
+   Deliberately dark: it closes the light page the way thinkhat.ai does.
+   ============================================================ */
+.sitefoot{background:#0d0d1e; color:#f5f5fc}
+.sitefoot-inner{
+  max-width:1180px; margin:0 auto;
+  padding:clamp(40px,6vh,72px) 28px clamp(24px,3vh,32px);
+  display:grid; gap:clamp(26px,4vw,54px);
+  grid-template-columns:1.7fr 1fr 1.2fr;
+}
+@media (max-width:860px){ .sitefoot-inner{grid-template-columns:1fr; gap:30px} }
+.sitefoot .fbrand{font-family:var(--display); font-weight:600; font-size:22px; letter-spacing:-.02em}
+.sitefoot .fbrand span{color:#9494b8}
+.sitefoot .fabout{margin:16px 0 0; max-width:430px; font-family:var(--sans); font-size:14.5px; line-height:1.68; color:#adadc9}
+.sitefoot h3{
+  margin:0 0 16px; font-family:var(--mono);
+  font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:#8383a8;
+}
+.sitefoot ul{margin:0; padding:0; list-style:none; display:grid; gap:12px}
+.sitefoot a{font-family:var(--sans); font-size:14.5px; color:#dcdcee; text-decoration:none; transition:.2s ease}
+.sitefoot a:hover{color:#fff}
+.sitefoot .fmail{
+  font-family:var(--display); font-weight:600; font-size:18px; letter-spacing:-.02em;
+  background:linear-gradient(100deg,#fff,#c3baff 58%,#6fe3ea);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sitefoot-bottom{
+  border-top:1px solid rgba(255,255,255,.10);
+  max-width:1180px; margin:0 auto;
+  padding:18px 28px clamp(24px,3vh,34px);
+  display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  font-family:var(--mono);
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8383a8;
+}
+.sitefoot-bottom a{font-family:inherit; font-size:11px; letter-spacing:.1em; color:#adadc9}
+
+/* ---------- unrolled fallback (narrow or very short windows) ----------
+   JS adds .flow to <body> when the circle would be too small to read. */
+body.flow main{display:block}
+body.flow .page{padding:22px 18px 40px}
+body.flow .page{display:block}
+body.flow .stage-wrap{display:block}
+body.flow .stage{
+  container-type:normal; --u:1px;
+  width:100%; height:auto;
+  display:flex; flex-direction:column; align-items:center; gap:16px; padding:26px 0 10px;
+}
+body.flow .orbit{position:static; display:flex; flex-direction:column; gap:16px;
+  width:100%; height:auto}
+body.flow .stage{order:-1}
+body.flow .ring{position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:min(620px,108vw); height:min(620px,108vw); inset:auto; opacity:.8;
+  animation:ringSpin 16s linear infinite}
+@keyframes ringSpin{
+  from{transform:translateX(-50%) rotate(0deg)}
+  to  {transform:translateX(-50%) rotate(360deg)}
+}
+body.flow .spokes, body.flow .watermark{display:none}
+body.flow .hub{position:static; transform:none;
+  width:min(300px,72vw); height:min(300px,72vw); order:-1}
+body.flow .node{position:static; transform:none; animation:none; width:min(460px,92vw) !important; margin:0 auto}
+/* short windows (laptops): shrink the chrome so the circle gets the height */
+@media (max-height:820px) and (min-width:561px){
+  .topbar{padding:11px 34px}
+  .pagehead h2{font-size:clamp(22px,3.8vh,34px)}
+  .pagehead .domain{display:none}
+}
+
+/* ---------- tab-switch transition: LIVING ORBIT + WARP ----------
+   At rest the six cards drift slowly around the circle, each on its own
+   phase, and the ring turns behind them — the page is never quite still.
+   On a tab change the whole orbit spins up: angular velocity ramps, motion
+   blur builds, the cards fling outward and fade, and the next product's six
+   decelerate back into their places.
+   Every rotation is paired with an equal unwind, so a card stays square to
+   the page however far round the orbit carries it.
+   --dir is set by JS: +1 moving right through the menu, -1 moving left. */
+.stage, .node{will-change:transform,filter,opacity}
+
+/* ---- the idle: a slow drift around the orbit, desynced per card ---- */
+@keyframes orbitDrift{
+  from{
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) + var(--sway,1deg)))
+              translateX(calc(var(--rad,0px) * 1.008))
+              rotate(calc((var(--ang,0deg) + var(--sway,1deg)) * -1));
+  }
+  to{
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) - var(--sway,1deg)))
+              translateX(calc(var(--rad,0px) * .992))
+              rotate(calc((var(--ang,0deg) - var(--sway,1deg)) * -1));
+  }
+}
+/* --sway is set per card by JS from the real gap to its neighbour, so the
+   drift can never bring two cards close enough to overlap or to disturb
+   reading. It is a slow float, not a movement you have to wait out. */
+.node{
+  animation:orbitDrift calc(13s + var(--i,0) * 1.6s) ease-in-out infinite alternate;
+  animation-delay:calc(var(--i,0) * -3.1s);
+}
+@keyframes ringDrift{from{transform:rotate(0deg)} to{transform:rotate(360deg)}}
+.ring{animation:ringDrift 120s linear infinite}
+
+/* ---- the warp ---- */
+.page.is-entering .stage{animation:warpRingIn .86s cubic-bezier(.14,.75,.2,1) both}
+.page.is-leaving  .stage{animation:warpRingOut .82s cubic-bezier(.5,0,.9,.3) both}
+.page.is-entering .node{animation:warpIn .8s cubic-bezier(.14,.75,.2,1) both;
+  animation-delay:calc(var(--i,0) * 35ms + 60ms)}
+.page.is-leaving  .node{animation:warpOut .72s cubic-bezier(.5,0,.9,.3) both;
+  animation-delay:calc(var(--i,0) * 35ms)}
+.page.is-entering .pagehead{animation:headIn .55s .2s ease both}
+.page.is-leaving  .pagehead{animation:headOut .34s ease both}
+
+/* cards: the orbit spins up, then the radius collapses and the card shrinks
+   away into the middle of the circle */
+@keyframes warpOut{
+  0%{
+    opacity:1; filter:blur(0);
+    transform:translate(-50%,-50%)
+              rotate(var(--ang,0deg)) translateX(var(--rad,0px))
+              rotate(calc(var(--ang,0deg) * -1)) scale(1);
+  }
+  26%{
+    opacity:1; filter:blur(1.5px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) + var(--dir,1) * 62deg))
+              translateX(calc(var(--rad,0px) * 1.02))
+              rotate(calc((var(--ang,0deg) + var(--dir,1) * 62deg) * -1)) scale(.95);
+  }
+  70%{
+    opacity:.72; filter:blur(5px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) + var(--dir,1) * 300deg))
+              translateX(calc(var(--rad,0px) * .42))
+              rotate(calc((var(--ang,0deg) + var(--dir,1) * 300deg) * -1)) scale(.46);
+  }
+  100%{
+    opacity:0; filter:blur(11px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) + var(--dir,1) * 640deg))
+              translateX(0px)
+              rotate(calc((var(--ang,0deg) + var(--dir,1) * 640deg) * -1)) scale(.1);
+  }
+}
+/* and the next product's six are born out of the circle, growing back to size
+   as the orbit carries them out to their places */
+@keyframes warpIn{
+  0%{
+    opacity:0; filter:blur(11px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) - var(--dir,1) * 640deg))
+              translateX(0px)
+              rotate(calc((var(--ang,0deg) - var(--dir,1) * 640deg) * -1)) scale(.1);
+  }
+  45%{
+    opacity:.85; filter:blur(4px);
+    transform:translate(-50%,-50%)
+              rotate(calc(var(--ang,0deg) - var(--dir,1) * 210deg))
+              translateX(calc(var(--rad,0px) * .5))
+              rotate(calc((var(--ang,0deg) - var(--dir,1) * 210deg) * -1)) scale(.52);
+  }
+  100%{
+    opacity:1; filter:blur(0);
+    transform:translate(-50%,-50%)
+              rotate(var(--ang,0deg)) translateX(var(--rad,0px))
+              rotate(calc(var(--ang,0deg) * -1)) scale(1);
+  }
+}
+/* the circle spins up with them */
+@keyframes warpRingOut{
+  from{opacity:1; filter:blur(0);    transform:rotate(0deg) scale(1)}
+  to  {opacity:0; filter:blur(12px); transform:rotate(calc(var(--dir,1) * 640deg)) scale(.8)}
+}
+@keyframes warpRingIn{
+  from{opacity:0; filter:blur(12px); transform:rotate(calc(var(--dir,1) * -640deg)) scale(.82)}
+  to  {opacity:1; filter:blur(0);    transform:rotate(0deg) scale(1)}
+}
+
+@keyframes headIn{
+  from{opacity:0; filter:blur(8px); transform:translateY(10px)}
+  to  {opacity:1; filter:blur(0);   transform:none}
+}
+@keyframes headOut{
+  from{opacity:1; filter:blur(0)}
+  to  {opacity:0; filter:blur(8px); transform:translateY(-8px)}
+}
+
+/* phone layout: the unrolled list just cross-fades — no orbit, no warp;
+   only the ring keeps spinning (see body.flow .ring above) */
+body.flow .page.is-entering .stage,
+body.flow .page.is-leaving .stage,
+body.flow .page.is-entering .node,
+body.flow .page.is-leaving .node{animation:none}
+body.flow .page.is-entering .orbit{animation:orbitFade .5s ease both}
+body.flow .page.is-leaving .orbit{animation:orbitFadeOut .3s ease both}
+@keyframes orbitFade{from{opacity:0; filter:blur(6px)} to{opacity:1; filter:blur(0)}}
+@keyframes orbitFadeOut{from{opacity:1; filter:blur(0)} to{opacity:0; filter:blur(6px)}}
+
+@media (prefers-reduced-motion:reduce){
+  .stage, .node, .orbit, .pagehead, .ring{animation:none !important}
+}
+
+
+/* ---------- arriving on a page ----------
+   A navigation replaces the old tab cross-fade, so the document itself
+   fades up, and the circle + cards still warp in over the top of it. */
+@keyframes docIn{from{opacity:0} to{opacity:1}}
+body{animation:docIn .32s ease both}
+body.is-leaving-page{opacity:0; transition:opacity .34s ease}
+@media (prefers-reduced-motion:reduce){
+  body{animation:none}
+  body.is-leaving-page{transition:none}
+}
+
+/* ============================================================
+   THE STEEL CURTAIN (home page only)
+
+   One canvas, four acts, drawn live:
+
+     0.0 - 0.9s   the steel hands over — every point of the mark becomes a
+                  0 or a 1, half violet and half silver, exactly
+     0.9 - 1.2s   it holds, complete and motionless
+     1.2 - 2.1s   the digits scatter out into falling columns
+     2.1 - 3.1s   rain, the full width of the screen
+     3.1 - 4.1s   the rain gathers itself into concentric rings of binary
+     4.1 - 4.4s   the rings turn, briefly
+     4.4 - 6.1s   they drain inward, innermost first, and the screen empties
+     6.3s         the page behind is live
+
+   Everything is one system of digits carrying through all four states, so it
+   fills any viewport and costs nothing to download.
+
+   Shown only when the inline script in the head has put .intro-on on
+   <html> — with JS off, on a repeat visit, or under reduced motion it never
+   exists at all.
+   ============================================================ */
+.intro{display:none}
+.intro-on .intro{
+  display:block; position:fixed; inset:0; z-index:200;
+  overflow:hidden; cursor:crosshair;
+}
+.intro-on body{overflow:hidden}
+
+.intro-ground{
+  position:absolute; inset:0; background:#fbfbfb;
+  transition:opacity .6s cubic-bezier(.4,0,.5,1);
+}
+
+/* the canvas is the whole screen: the rain and the rings need the width */
+.intro-art{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  display:block;
+}
+
+.intro-hint{
+  position:absolute; left:0; right:0; bottom:clamp(18px,4vh,44px);
+  margin:0; text-align:center;
+  font-family:var(--mono); font-size:11px; letter-spacing:.2em;
+  text-transform:uppercase; color:#9a9ab4;
+  animation:hintIn 1.4s 1.5s ease both;
+}
+@keyframes hintIn{from{opacity:0} to{opacity:.85}}
+
+/* ---------- the dismissal ---------- */
+.intro.is-out{cursor:default}
+.intro.is-out .intro-hint{opacity:0; transition:opacity .35s ease}
+.intro.is-out .intro-ground{opacity:0; transition-delay:6.05s}
+.intro.is-gone{opacity:0; pointer-events:none; transition:opacity .3s ease}
+
+.intro.is-rushed .intro-art{opacity:0; transition:opacity .35s ease}
+.intro.is-rushed .intro-ground{opacity:0; transition-delay:.3s; transition-duration:.4s}
