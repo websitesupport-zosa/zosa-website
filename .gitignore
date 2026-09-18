@@ -30,3 +30,6 @@ zosa-logo-butterflies.gif
 
 # internal positioning brief - the repo root is the published site
 PRODUCT.md
+
+# local editor settings
+.vscode/

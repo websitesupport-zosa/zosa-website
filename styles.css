@@ -46,6 +46,20 @@ body.flow{height:auto; min-height:100svh; overflow:auto; display:block}
   backdrop-filter:blur(12px);
   border-bottom:1px solid var(--line);
 }
+/* The header, lifted in front of the curtain while the digits converge on the
+   mark. Its background and border go so the canvas reads straight through and
+   the digits pass behind the logo rather than under an opaque bar; it is inert
+   until the curtain has gone, so nothing can be clicked mid-animation. */
+.intro-handoff .topbar{
+  z-index:260;
+  background:transparent;
+  backdrop-filter:none;
+  border-bottom-color:transparent;
+  pointer-events:none;
+  animation:headerIn .85s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes headerIn{from{opacity:0} to{opacity:1}}
+
 .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit}
 .brand .mark{
   width:42px;height:42px;
@@ -65,6 +79,15 @@ body.flow{height:auto; min-height:100svh; overflow:auto; display:block}
 .brand .mark img{animation:markSpinIn 1.25s cubic-bezier(.18,.78,.2,1) both}
 .brand .mark img.spun{animation:none; transition:transform 1s cubic-bezier(.3,.72,.2,1)}
 .brand:hover .mark img.spun{transform:rotate(360deg)}
+/* The curtain's digits arrive here and the mark takes the impact. This has to
+   sit after .spun, which by then has set animation:none at the same weight. */
+@keyframes markLand{
+  0%  {transform:rotate(-150deg) scale(.68)}
+  55% {transform:rotate(12deg)   scale(1.14)}
+  100%{transform:rotate(0)       scale(1)}
+}
+.brand .mark img.lands,
+.brand .mark img.spun.lands{animation:markLand .95s cubic-bezier(.2,.75,.2,1) both}
 .brand .wm{animation:wordmarkIn .75s .4s cubic-bezier(.2,.7,.2,1) both}
 @media (prefers-reduced-motion:reduce){
   .brand .mark img, .brand .wm{animation:none !important}
@@ -749,10 +772,10 @@ body.is-leaving-page{opacity:0; transition:opacity .34s ease}
 
 .intro-ground{
   position:absolute; inset:0; background:#fbfbfb;
-  transition:opacity .6s cubic-bezier(.4,0,.5,1);
+  transition:opacity .9s cubic-bezier(.4,0,.5,1);
 }
 
-/* the canvas is the whole screen: the rain and the rings need the width */
+/* the canvas is the whole screen: the rings span its full width */
 .intro-art{
   position:absolute; inset:0;
   width:100%; height:100%;
@@ -771,7 +794,10 @@ body.is-leaving-page{opacity:0; transition:opacity .34s ease}
 /* ---------- the dismissal ---------- */
 .intro.is-out{cursor:default}
 .intro.is-out .intro-hint{opacity:0; transition:opacity .35s ease}
-.intro.is-out .intro-ground{opacity:0; transition-delay:6.05s}
+/* The body of the page waits until the digits have landed. Only the header is
+   brought forward early, by .intro-handoff below, so the mark is there to be
+   flown into without the copy being buried under full-width rings. */
+.intro.is-out .intro-ground{opacity:0; transition-delay:4.2s; transition-duration:.8s}
 .intro.is-gone{opacity:0; pointer-events:none; transition:opacity .3s ease}
 
 .intro.is-rushed .intro-art{opacity:0; transition:opacity .35s ease}

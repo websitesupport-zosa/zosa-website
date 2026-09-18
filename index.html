@@ -68,7 +68,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20260916p">
+<link rel="stylesheet" href="styles.css?v=20260918k">
 
 <!-- The steel mark is the first thing on screen, so fetch it early. -->
 <link rel="preload" as="image" href="intro-still.png" />
@@ -76,14 +76,31 @@
 <script>
 /* Runs before the body paints, so the curtain is either there from the first
    frame or never appears at all — no flash of the page underneath.
-   It is skipped for repeat visits in the same session, and for anyone who
-   has asked for reduced motion. */
+
+   It is a first-impression piece, so it is deliberately rare:
+
+     - at most once a day per visitor;
+     - never when they came from elsewhere on the site, so clicking Home
+       after reading a product page is instant;
+     - never for someone who arrived from a search engine, who came with a
+       question and should meet the answer rather than a five-second
+       animation standing in front of it;
+     - never for anyone who has asked for reduced motion.
+
+   ?intro=1 overrides all of it bar reduced motion, which is how the piece
+   gets demonstrated and shared. */
 (function(){
   try {
-    var seen  = sessionStorage.getItem('zosa:intro') === 'done';
-    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var force = location.search.indexOf('intro') > -1;   /* ?intro=1 replays it */
-    if ((force || !seen) && !still) document.documentElement.className += ' intro-on';
+    var DAY    = 24 * 60 * 60 * 1000;
+    var SEARCH = /^https?:\/\/([a-z0-9-]+\.)*(google|bing|duckduckgo|yahoo|ecosia|baidu|yandex|naver|brave|startpage|qwant|perplexity)\./i;
+    var ref    = document.referrer || '';
+    var still  = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var force  = location.search.indexOf('intro') > -1;
+    var last   = parseInt(localStorage.getItem('zosa:intro') || '0', 10) || 0;
+    var due    = (Date.now() - last) > DAY;
+    var inside = ref.indexOf(location.origin + '/') === 0;
+    var found  = SEARCH.test(ref);
+    if (!still && (force || (due && !inside && !found))) document.documentElement.className += ' intro-on';
   } catch (e) {
     document.documentElement.className += ' intro-on';
   }
@@ -288,6 +305,6 @@
 
 </main>
 
-<script src="app.js?v=20260916p"></script>
+<script src="app.js?v=20260918k"></script>
 </body>
 </html>

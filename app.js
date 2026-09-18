@@ -36,12 +36,11 @@ function zosaIndex(path){
 /* ============================================================
    THE STEEL CURTAIN (home page only)
 
-   One canvas, four acts, all drawn from the same set of digits:
+   One canvas, three acts, all drawn from the same set of digits:
 
      steel mark -> every point of it becomes a 0 or a 1
-                -> they scatter into rain falling the full width of the screen
-                -> the rain gathers into concentric rings of binary
-                -> the rings drain inward, innermost first, and it empties
+                -> they gather into concentric rings of binary
+                -> the rings shrink into the nav logo, innermost first
 
    Because the digits carry through rather than being four separate clips,
    the transitions are continuous — and it fits any viewport and downloads
@@ -65,19 +64,25 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
   var T = {
     convert: 900,     /* steel hands over to digits            */
     hold:   1200,     /* the mark sits there, complete         */
-    rain:   2100,     /* scattered out into falling columns    */
-    fall:   3100,     /* raining                               */
-    rings:  4100,     /* gathered into concentric rings        */
-    turn:   4400,     /* the rings turn briefly                */
-    drain:  6100      /* drained inward and gone               */
+    rings:  2500,     /* gathered into concentric rings        */
+    turn:   2800,     /* the rings turn briefly                */
+    drain:  4600      /* the last of them reaches the logo     */
   };
-  var LIVE_AT = 6300, GONE_AT = 6600, OUT_AT = 6900, WAIT_MAX = 9000;
+  var LIVE_AT = 4900, GONE_AT = 5100, OUT_AT = 5400;
+  var HANDOFF_AT = 2500;   /* the header steps out in front of the curtain */
+  /* How long it will wait to be started before starting itself. Someone who
+     arrived from a search result is here to read, not to discover that the
+     page wants a gesture first — so this is short. */
+  var WAIT_MAX = 3200;
+  var LAND_AT = 4450;   /* the mark takes the hit, with the digits still arriving */
 
-  var VIOLET = ['#6d28d9', '#7c3aed', '#8b5cf6'];
+  var BLACK  = ['#0b0b12', '#16161f', '#24242f'];
   var SILVER = ['#9aa0b4', '#aeb4c4', '#c2c7d4'];
   var RING_COUNT = 14;
 
   var W = 0, H = 0, cx = 0, cy = 0, markHalf = 0, dpr = 1;
+  var landX = 0, landY = 0, landR = 18;   /* the nav logo, measured from the live page */
+  var c1x = 0, c1y = 0, c2x = 0, c2y = 0; /* the two controls of the wave up to it */
   var bits = [], steel = new Image(), steelReady = false;
   steel.onload = function(){ steelReady = true; };
   steel.src = 'intro-still.png';
@@ -94,6 +99,41 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cx = W / 2; cy = H / 2;
     markHalf = Math.min(W, H) * 0.5;
+
+    /* The page is laid out behind the curtain, so the logo can be measured
+       rather than guessed — it stays right through a resize or a switch to
+       the mobile header. */
+    var logo = document.querySelector('.brand .mark');
+    if (logo){
+      var lr = logo.getBoundingClientRect();
+      landX = lr.left + lr.width  / 2;
+      landY = lr.top  + lr.height / 2;
+      /* the drawn circle sits a little inside its box, so the rings come to
+         rest on the outline itself rather than hovering off it */
+      landR = Math.max(7, Math.min(lr.width, lr.height) * 0.44);
+    } else {
+      landX = cx; landY = cy; landR = 18;
+    }
+
+    /* The wave the pattern rides into the mark. Two controls, each a third of
+       the way along: the first lifted well above the line so the pattern
+       climbs as it sets off, the second dropped below it so it crosses over,
+       falls away, and comes up into the mark from underneath.
+
+       The offsets are vertical rather than perpendicular to the line. Waving
+       perpendicular pushes the curve leftward as well, and on anything
+       narrower than a desktop that ran the digits off the left edge long
+       before the S looked like much. Straight up and down, x stays a clean
+       run from centre to the mark and all the shape lives in y — which also
+       means the curve can never leave the screen sideways, however deep the
+       wave gets. Scaled by height, so it reads the same on any window. */
+    var vx = landX - cx, vy = landY - cy;
+    var RISE = H * 0.72;   /* the climb out */
+    var FALL = H * 1.08;   /* the deeper swing back down before it comes in */
+    c1x = cx + vx / 3;
+    c1y = cy + vy / 3 - RISE;
+    c2x = cx + 2 * vx / 3;
+    c2y = cy + 2 * vy / 3 + FALL;
 
     var n = Math.floor(PTS.length / 2);
     if (!n) return;
@@ -120,15 +160,7 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
       ringS.push(Math.max(7, Math.min(gap * 0.72, W * 0.055)));
     }
 
-    /* the rain: columns spread across the full width */
-    var cols = [], x = -12;
-    while (x < W + 12){
-      var near = Math.random();
-      cols.push({x: x, near: near, size: 9 + near * near * 26, speed: 26 + near * 118});
-      x += 10 + near * 20 + Math.random() * 16;
-    }
-
-    var made = 0, ring = 0, inRing = 0;
+    var ring = 0, inRing = 0;
     for (var i = 0; i < n; i++){
       var b = bits[i] || (bits[i] = {});
 
@@ -137,31 +169,29 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
       b.ly = cy + PTS[i * 2 + 1] * markHalf;
       b.lsize = Math.max(9, markHalf * 0.038);
 
-      /* which column of rain it joins */
-      var col = cols[(Math.random() * cols.length) | 0];
-      b.cx0   = col.x;
-      b.csize = col.size;
-      b.cspd  = col.speed;
-      b.cy0   = rnd(-H * 0.6, H);
-      b.cnear = col.near;
-
       /* and its place in the rings */
       while (ring < RING_COUNT - 1 && inRing >= ringN[ring]){ ring++; inRing = 0; }
       b.ring  = ring;
       b.rr    = ringR[ring];
       b.rang  = (inRing / Math.max(1, ringN[ring])) * Math.PI * 2 + (ring * 0.21);
       b.rsize = ringS[ring];
+      /* What it shrinks to when it reaches the mark. The logo's circle is only
+         ~116px around, and the outer rings carry three times the digits of the
+         inner ones, so a single landing size would pile them up. Sizing each
+         ring from its own population lets a crowded ring arrive as fine
+         texture tracing the outline instead. */
+      b.fsize = Math.max(1.8, Math.min(3.4,
+                  (2 * Math.PI * landR) / Math.max(1, ringN[ring]) * 1.2));
       inRing++;
 
       if (b.glyph === undefined){
         /* colour on one parity and glyph on the other, so each split is
            exactly half and the two do not line up */
-        b.col   = (i % 2 === 0) ? VIOLET[(Math.random()*3)|0] : SILVER[(Math.random()*3)|0];
+        b.col   = (i % 2 === 0) ? BLACK[(Math.random()*3)|0] : SILVER[(Math.random()*3)|0];
         b.glyph = (Math.floor(i / 2) % 2 === 0) ? '0' : '1';
         b.flip  = rnd(600, 1500);
         b.born  = (1 - Math.abs(PTS[i*2+1])) * 120 + Math.random() * 380;
       }
-      made++;
     }
     bits.length = n;
   }
@@ -170,17 +200,11 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
   function ease(t){ return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t); }
   function mix(a, b, t){ return a + (b - a) * t; }
 
-  function rainPos(b, ms){
-    var span = H + H * 0.6;
-    var y = b.cy0 + (b.cspd * ms / 1000);
-    y = ((y + H * 0.6) % span) - H * 0.6;
-    return y;
-  }
-
   function draw(ms){
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.fillStyle = '#fbfbfb';
-    ctx.fillRect(0, 0, W, H);
+    /* transparent, not white: .intro-ground supplies the backdrop, so when it
+       fades the page shows through and the digits keep flying over it */
+    ctx.clearRect(0, 0, W, H);
 
     /* the steel, handing over */
     if (steelReady && ms < T.convert + 120){
@@ -204,42 +228,46 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
         /* on the mark */
         x = b.lx; y = b.ly; size = b.lsize;
         alpha = Math.min(1, (ms - b.born) / 220);
-      } else if (ms < T.rain){
-        /* scattering out into the columns */
-        var t = ease((ms - T.hold) / (T.rain - T.hold));
-        var ry = rainPos(b, ms - T.hold);
-        x = mix(b.lx, b.cx0, t);
-        y = mix(b.ly, ry, t);
-        size = mix(b.lsize, b.csize, t);
-        alpha = mix(1, 0.16 + b.cnear * 0.84, t);
       } else if (ms < T.rings){
-        /* falling, then gathering into the rings */
-        var ry2 = rainPos(b, ms - T.hold);
-        x = b.cx0; y = ry2; size = b.csize;
-        alpha = 0.16 + b.cnear * 0.84;
-        if (ms > T.fall){
-          var g = ease((ms - T.fall) / (T.rings - T.fall));
-          if (b.gx === undefined || ms - T.fall < 40){ b.gx = b.cx0; b.gy = ry2; }
-          var tx = cx + Math.cos(b.rang) * b.rr;
-          var ty = cy + Math.sin(b.rang) * b.rr;
-          x = mix(b.gx, tx, g);
-          y = mix(b.gy, ty, g);
-          size = mix(b.csize, b.rsize, g);
-          alpha = mix(alpha, 1, g);
-        }
+        /* leaving the mark and opening out into the rings */
+        var g = ease((ms - T.hold) / (T.rings - T.hold));
+        var tx = cx + Math.cos(b.rang) * b.rr;
+        var ty = cy + Math.sin(b.rang) * b.rr;
+        x = mix(b.lx, tx, g);
+        y = mix(b.ly, ty, g);
+        size = mix(b.lsize, b.rsize, g);
       } else {
-        /* the rings, turning — then draining inward from the middle out */
+        /* The rings turn, then close one at a time from the inside out. A
+           closing ring does three things at once: its radius runs down to the
+           mark's own, its centre rides a wave up to the mark, and it keeps
+           turning as it goes — so the pattern spirals into the logo rather
+           than sliding at it in a straight line. */
         var spin = (ms - T.rings) / 1000 * 0.10;
-        var rr = b.rr;
+        var rr = b.rr, ox = cx, oy = cy, swirl = 0;
+        size = b.rsize;
         var st = T.turn + b.ring * 85;
         if (ms > st){
-          var d = ease((ms - st) / 900);
-          rr = mix(b.rr, 0, d);
-          if (d > 0.55) alpha = 1 - (d - 0.55) / 0.45;
+          var d = ease((ms - st) / 1000);
+          /* down to the mark's own radius, not to nothing: each ring comes to
+             rest as the logo's circle before it lets go, so they are seen
+             fitting into it rather than vanishing at a point */
+          rr = mix(b.rr, landR, d);
+
+          /* a cubic through both controls: up, across, and in from below */
+          var u = 1 - d, uu = u * u, dd = d * d;
+          ox = uu * u * cx + 3 * uu * d * c1x + 3 * u * dd * c2x + dd * d * landX;
+          oy = uu * u * cy + 3 * uu * d * c1y + 3 * u * dd * c2y + dd * d * landY;
+
+          /* and the ring keeps winding as it closes, so each digit traces its
+             own spiral in rather than falling straight down its radius */
+          swirl = d * 1.7;
+
+          size = mix(b.rsize, b.fsize, d);
+          /* held until they are on the circle, then gone quickly */
+          if (d > 0.88) alpha = 1 - (d - 0.88) / 0.12;
         }
-        x = cx + Math.cos(b.rang + spin) * rr;
-        y = cy + Math.sin(b.rang + spin) * rr;
-        size = b.rsize;
+        x = ox + Math.cos(b.rang + spin + swirl) * rr;
+        y = oy + Math.sin(b.rang + spin + swirl) * rr;
       }
 
       if (alpha <= 0.02) continue;
@@ -266,6 +294,27 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
     if (ms < T.drain + 400) raf = requestAnimationFrame(frame);
   }
 
+  /* Brings the header out in front of the curtain so the mark is on screen
+     while the digits are still flying at it. Only the header: the page body
+     stays behind the ground, because full-width rings over live copy look
+     like a mistake rather than an effect. */
+  function handoff(){
+    document.documentElement.classList.add('intro-handoff');
+  }
+
+  /* the mark absorbs them: one spin, on the real logo, under the canvas */
+  function land(){
+    var img = document.querySelector('.brand .mark img');
+    if (!img) return;
+    img.classList.remove('lands');
+    void img.offsetWidth;            /* so it restarts if it is already playing */
+    img.classList.add('lands');
+    img.addEventListener('animationend', function once(){
+      img.classList.remove('lands');
+      img.removeEventListener('animationend', once);
+    });
+  }
+
   function live(){
     document.documentElement.className =
       document.documentElement.className.replace(/\bintro-on\b/, '');
@@ -276,16 +325,26 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
   function dismiss(){
     if (going) return;
     going = true;
-    try { sessionStorage.setItem('zosa:intro', 'done'); } catch (e) {}
+    /* stamped when it actually runs, so a visitor who leaves without moving
+       the cursor still gets it next time */
+    try { localStorage.setItem('zosa:intro', String(Date.now())); } catch (e) {}
+
+    /* drop ?intro=1 from the address bar once it has done its job */
+    if (location.search.indexOf('intro') > -1 && window.history && history.replaceState){
+      try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    }
 
     intro.classList.add('is-out');
     t0 = performance.now();
     raf = requestAnimationFrame(frame);
 
+    later(handoff, HANDOFF_AT);
+    later(land, LAND_AT);
     later(live, LIVE_AT);
     later(function(){ intro.classList.add('is-gone'); }, GONE_AT);
     later(function(){
       cancelAnimationFrame(raf);
+      document.documentElement.classList.remove('intro-handoff');
       if (intro.parentNode) intro.parentNode.removeChild(intro);
     }, OUT_AT);
   }
@@ -295,10 +354,13 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
     intro.classList.add('is-rushed');
     timers.forEach(clearTimeout);
     timers = [];
+    later(handoff, 120);
+    later(land, 380);
     later(live, 520);
     later(function(){ intro.classList.add('is-gone'); }, 900);
     later(function(){
       cancelAnimationFrame(raf);
+      document.documentElement.classList.remove('intro-handoff');
       if (intro.parentNode) intro.parentNode.removeChild(intro);
     }, 1250);
   }
@@ -377,6 +439,24 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
   setTimeout(function(){ mark.classList.add('spun'); }, 1600);
 })();
 
+/* ---------- logo: replays the curtain when you are already home ----------
+   On every other page the logo is the way back, so it is left alone. Here it
+   links to the page you are standing on and is free to do something better —
+   which also makes the intro demonstrable without typing a URL. */
+(function(){
+  var brand = document.querySelector('.brand');
+  if (!brand) return;
+  var here = location.pathname.replace(/index\.html$/, '');
+  if (here !== '/' && here !== './' && here !== '') return;
+
+  brand.setAttribute('title', 'Replay the intro');
+  brand.addEventListener('click', function(e){
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;  /* open-in-new-tab still works */
+    e.preventDefault();
+    location.href = location.pathname + '?intro=1';
+  });
+})();
+
 /* ---------- reveal on scroll (About / Contact) ---------- */
 (function(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -390,12 +470,24 @@ window.ZOSA_INTRO_PENDING = !!document.getElementById('intro') &&
     entries.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('in'); });
   }, {rootMargin:'0px 0px -8% 0px', threshold:.05});
 
-  function watch(){ items.forEach(function(el){ io.observe(el); }); }
+  var watching = false;
+  function watch(){
+    if (watching) return;
+    watching = true;
+    items.forEach(function(el){ io.observe(el); });
+  }
 
   /* hold off while the steel curtain is up, or the hero would reveal itself
      behind it and be finished by the time anyone sees the page */
   if (window.ZOSA_INTRO_PENDING){
     window.addEventListener('zosa:intro-done', watch, {once:true});
+    /* Safety net. The curtain waits to be started, and anything that never
+       starts it — a crawler taking a render snapshot, a link-preview bot, a
+       tab left in the background — would otherwise leave every .reveal in the
+       hero sitting at opacity:0 in whatever it captured. Revealing early
+       behind an opaque curtain costs nothing on screen, and it means the
+       page's own copy is never the thing that goes missing. */
+    setTimeout(watch, 2200);
   } else {
     watch();
   }
